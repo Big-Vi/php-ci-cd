@@ -1,0 +1,72 @@
+# Your project's server will run on localhost:xxxx at this port
+PORT: 8000
+
+# UnCSS will use these settings
+UNCSS_OPTIONS:
+    html:
+        # Search for used CSS classes in generated HTML files
+        - 'dist/**/*.html'
+    ignore:
+        - !!js/regexp .foundation-mq
+        - !!js/regexp ^\.is-.*
+        - !!js/regexp ^\.drilldown.*
+        - !!js/regexp ^\.off-canvas.*
+        - !!js/regexp ^\.dropdown.*
+        - !!js/regexp ^\.reveal.*
+        - !!js/regexp ^\.mui.*
+        - !!js/regexp ^\.fade.*
+        - !!js/regexp ^\.grecaptcha.*
+        - !!js/regexp ^\.hamburger.*
+        - !!js/regexp ^\[data-whatintent.*
+        - !!js/regexp ^\[data-whatinput.*
+
+HTML_LINTER:
+    tagname-lowercase: true
+    attr-lowercase: false
+    attr-value-double-quotes: false
+    attr-value-not-empty: false
+    attr-no-duplication: true
+    doctype-first: true
+    tag-pair: true
+    tag-self-close: false
+    spec-char-escape: true
+    id-unique: true
+    src-not-empty: true
+    title-require: true
+    head-script-disabled: true
+    alt-require: true
+    doctype-html5: true
+    id-class-value: true
+    style-disabled: false
+    inline-style-disabled: false
+    inline-script-disabled: false
+    space-tab-mixed-disabled: true
+    id-class-ad-disabled: true
+    href-abs-or-rel: false
+    attr-unsafe-chars: true
+
+# Gulp will reference these paths when it copies files
+PATHS:
+    # Path to dist folder
+    dist: 'dist'
+
+    # Path to SilverStripe dist folder
+    ss_dist: '_resources/themes/base/dist'
+
+    # Paths to static assets that aren't images, CSS, or JavaScript
+    assets:
+        - 'src/assets/**/*'
+        - '!src/assets/{img,js,scss}/**'
+
+    # Paths to Sass libraries, which can then be loaded with @import in app.scss
+    sass:
+        - 'node_modules/foundation-sites/scss'
+        - 'node_modules/motion-ui/src'
+        - 'node_modules/hamburgers/_sass/hamburgers'
+        - 'node_modules/swiper'
+        - 'node_modules/modularscale-sass/stylesheets'
+        - 'node_modules/@fullcalendar'
+
+    # Paths to JavaScript libraries, which are combined into one file
+    entries:
+        - 'src/assets/js/app.js'

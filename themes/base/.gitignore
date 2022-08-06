@@ -1,0 +1,6 @@
+/dist
+/node_modules/
+/static/
+/styleguide.html
+/manifest.json
+/*-sw.js
