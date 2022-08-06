@@ -1,8 +1,11 @@
 /silverstripe-cache/
 /.env
 /vendor/
-/themes/simple/
+/themes/base/
 /_resources/
 /public/_resources/
 /.graphql-generated/
 /public/_graphql/
+/public/assets/
+/silverstripe-cache/
+/silverstripe.log

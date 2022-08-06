@@ -2154,57 +2154,6 @@
             "time": "2019-03-08T08:55:37+00:00"
         },
         {
-            "name": "silverstripe-themes/simple",
-            "version": "3.2.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/silverstripe/silverstripe-simple.git",
-                "reference": "179fe14554dc742654bf0713d6c36f5810d12b3d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/silverstripe/silverstripe-simple/zipball/179fe14554dc742654bf0713d6c36f5810d12b3d",
-                "reference": "179fe14554dc742654bf0713d6c36f5810d12b3d",
-                "shasum": ""
-            },
-            "require": {
-                "composer/installers": "*",
-                "silverstripe/framework": ">=3.5"
-            },
-            "type": "silverstripe-theme",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.2.x-dev"
-                },
-                "expose": [
-                    "css",
-                    "images",
-                    "javascript",
-                    "webfonts"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Sara Tušar (Innovaif)",
-                    "homepage": "http://www.saratusar.com"
-                }
-            ],
-            "description": "The SilverStripe simple theme (default SilverStripe 3 theme)",
-            "keywords": [
-                "silverstripe",
-                "theme"
-            ],
-            "support": {
-                "issues": "https://github.com/silverstripe/silverstripe-simple/issues",
-                "source": "https://github.com/silverstripe/silverstripe-simple/tree/3.2.1"
-            },
-            "time": "2018-11-26T10:51:13+00:00"
-        },
-        {
             "name": "silverstripe/admin",
             "version": "1.11.1",
             "source": {

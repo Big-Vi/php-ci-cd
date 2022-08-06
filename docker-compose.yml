@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+    silverstripe:
+        container_name: php_ci_cd
+        image: php_ci_cd_image
+        # build:
+        #     context: .
+        #     target: production
+        volumes:
+            - .:/var/www/html
+        depends_on:
+            - database
+        environment:
+            - DOCUMENT_ROOT=/var/www/html/public
+            - SS_TRUSTED_PROXY_IPS=*
+            - SS_ENVIRONMENT_TYPE=dev
+            - SS_DATABASE_SERVER=database
+            - SS_DATABASE_NAME=php_ci_cd
+            - SS_DATABASE_USERNAME=root
+            - SS_DATABASE_PASSWORD=
+            - SS_DEFAULT_ADMIN_USERNAME=admin
+            - SS_DEFAULT_ADMIN_PASSWORD=password
+        ports:
+            - 8000:80
+
+    database:
+        image: mysql:5.7
+        environment:
+            - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+        volumes:
+            - db-data:/var/lib/mysql
+        ports:
+            - '33060:3306'
+volumes:
+    db-data:
