@@ -5,8 +5,8 @@ COPY . /var/www/html
 RUN chown www-data:www-data /var/www/html/public/assets
 WORKDIR /var/www/html/themes/base
 COPY /themes/base/package.json /themes/base/yarn.lock ./
-RUN apt update && apt install -y python2
-RUN echo "export PYTHON=/usr/bin/python2" >> ~/.bashrc && /bin/bash -c "source ~/.bashrc" 
+# RUN apt update && apt install -y python2
+# RUN echo "export PYTHON=/usr/bin/python2" >> ~/.bashrc && /bin/bash -c "source ~/.bashrc" 
 RUN yarn install && yarn build
 RUN rm -rf node_module/ && rm -rf /var/lib/apt/lists/*
 

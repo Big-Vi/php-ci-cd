@@ -1,0 +1,70 @@
+{
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "inferenceAccelerators": [],
+    "containerDefinitions": [
+        {
+            "name": "php-image",
+            "image": "php",
+            "resourceRequirements": null,
+            "essential": true,
+            "portMappings": [
+                {
+                    "containerPort": "8000",
+                    "protocol": "tcp"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/php-task-definition",
+                    "awslogs-region": "ap-southeast-2",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            },
+            "secrets": [
+                {
+                    "name": "SS_ENVIRONMENT_TYPE",
+                    "valueFrom": "arn:aws:secretsmanager:ap-southeast-2:090426658505:secret:prod/php:SS_ENVIRONMENT_TYPE::"
+                },
+                {
+                    "name": "SS_DATABASE_CLASS",
+                    "valueFrom": "arn:aws:secretsmanager:ap-southeast-2:090426658505:secret:prod/php:SS_DATABASE_CLASS::"
+                },
+                {
+                    "name": "SS_DATABASE_SERVER",
+                    "valueFrom": "arn:aws:secretsmanager:ap-southeast-2:090426658505:secret:prod/php:SS_DATABASE_SERVER::"
+                },
+                {
+                    "name": "SS_DATABASE_USERNAME",
+                    "valueFrom": "arn:aws:secretsmanager:ap-southeast-2:090426658505:secret:prod/php:SS_DATABASE_USERNAME::"
+                },
+                {
+                    "name": "SS_DATABASE_PASSWORD",
+                    "valueFrom": "arn:aws:secretsmanager:ap-southeast-2:090426658505:secret:prod/php:SS_DATABASE_PASSWORD::"
+                },
+                {
+                    "name": "SS_DATABASE_NAME",
+                    "valueFrom": "arn:aws:secretsmanager:ap-southeast-2:090426658505:secret:prod/php:SS_DATABASE_NAME::"
+                },
+                {
+                    "name": "SS_DEFAULT_ADMIN_USERNAME",
+                    "valueFrom": "arn:aws:secretsmanager:ap-southeast-2:090426658505:secret:prod/php:SS_DEFAULT_ADMIN_USERNAME::"
+                },
+                {
+                    "name": "SS_DEFAULT_ADMIN_PASSWORD",
+                    "valueFrom": "arn:aws:secretsmanager:ap-southeast-2:090426658505:secret:prod/php:SS_DEFAULT_ADMIN_PASSWORD::"
+                }
+            ]
+        }
+    ],
+    "volumes": [],
+    "networkMode": "awsvpc",
+    "memory": "512",
+    "cpu": "256",
+    "executionRoleArn": "arn:aws:iam::090426658505:role/ecsTaskExecutionRole",
+    "family": "php-task-definition",
+    "taskRoleArn": "",
+    "placementConstraints": []
+}
