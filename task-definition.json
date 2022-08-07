@@ -6,7 +6,7 @@
     "containerDefinitions": [
         {
             "name": "php-image",
-            "image": "php",
+            "image": "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/php:latest",
             "resourceRequirements": null,
             "essential": true,
             "portMappings": [
