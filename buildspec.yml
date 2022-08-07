@@ -17,7 +17,8 @@ phases:
             - docker tag "$REPO_BASE/$REPO_NAME:latest" "$REPO_BASE/$REPO_NAME:$TAG"
     post_build:
         commands:
-            - docker push --all-tags "$REPO_BASE/$REPO_NAME"
+            - docker push $REPO_BASE/$REPO_NAME:$TAG
+            - docker push $REPO_BASE/$REPO_NAME:latest
             - printf [{\"name\":\"$REPO_NAME\"\,\"imageUri\":\"090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/$REPO_NAME:$TAG\"}] > imagedefinitions.json
 artifacts:
     files:
