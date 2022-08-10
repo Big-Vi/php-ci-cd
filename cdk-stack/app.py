@@ -1,10 +1,21 @@
 #!/usr/bin/env python3
-
 import aws_cdk as cdk
 
-from pipeline_stack import MyPipelineStack
+from Pipeline import Pipeline
+
+props = {'namespace': 'cdk-pipeline'}
 
 app = cdk.App()
-MyPipelineStack(app, "MyPipelineStack")
+
+Pipeline(app, f"{props['namespace']}-pipeline", props)
 
 app.synth()
+
+
+
+
+
+
+
+
+
