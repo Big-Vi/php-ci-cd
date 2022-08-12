@@ -16,8 +16,8 @@ class RDSStack(Stack):
             vpc_id="vpc-0a2eb88f37dd4d313",
         )
 
-        db_secret = Secret.from_secret_name_v2(
-            self, "DBSecret", "prod/php-app")
+        # db_secret = Secret.from_secret_name_v2(
+        #     self, "DBSecret", "prod/php-app")
 
         rds.DatabaseInstance(
             self, "RDS",
@@ -34,7 +34,7 @@ class RDSStack(Stack):
                 ec2.InstanceClass.BURSTABLE3,
                 ec2.InstanceSize.MICRO
             ),
-            credentials=rds.Credentials.from_secret(db_secret),
+            credentials=rds.Credentials.from_generated_secret("admin"),
             publicly_accessible=True,
             removal_policy=RemovalPolicy.DESTROY,
             deletion_protection=False
