@@ -25,6 +25,8 @@ RUN composer install \
 
 
 FROM phusion/baseimage:jammy-1.0.0
+ARG env
+
 # CMD ["/sbin/my_init"]
 
 # Update

@@ -27,12 +27,16 @@ docker push <ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/php
 ## CDK
 ```
 cdk init app --language python
-python3 install -r requirements.txt
+pip install -r requirements.txt
 python3 -m venv .venv
 source .venv/bin/activate
 cdk synth
 cdk bootstrap
 cdk deploy
+<!-- If you have more than one stack -->
+ckd deploy --all
+<!-- To debug if your CloudFormation fails -->
+cdk deploy --all --no-rollback
 <-- To only deploy the function not CloudFormation template -->
 cdk deploy --hotswap 
 cdk watch

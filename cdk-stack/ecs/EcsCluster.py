@@ -3,9 +3,7 @@ from aws_cdk import (
     aws_ecs as ecs,
     aws_iam as iam,
     aws_secretsmanager as secretsmanager,
-    aws_ecs_patterns as ecs_patterns,
-    aws_kms as kms,
-    Stack, CfnOutput,
+    Stack, CfnOutput, Fn
 )
 from constructs import Construct
 
@@ -20,6 +18,18 @@ class EcsCluster(Stack):
             vpc_id="vpc-0a2eb88f37dd4d313",
         )
 
+        vpc_subnets = ec2.SubnetSelection(
+            subnets=[
+                ec2.Subnet.from_subnet_id(
+                    self, "subnet1", "subnet-025da55a2ea069297"),
+                ec2.Subnet.from_subnet_id(
+                    self, "subnet2", "subnet-090a11611b7237db6")
+            ]
+        )
+
+        security_group = ec2.SecurityGroup.from_lookup_by_id(
+            self, "SG", "sg-0cf6eb022d5597677")
+
         self.cluster = ecs.Cluster(
             self, 'EcsCluster',
             vpc=vpc
@@ -32,31 +42,38 @@ class EcsCluster(Stack):
         ecsTaskExecutionRole.add_managed_policy(iam.ManagedPolicy.from_aws_managed_policy_name(
             "service-role/AmazonECSTaskExecutionRolePolicy"))
 
-        fargate_task_definition = ecs.FargateTaskDefinition(
+        self.fargate_task_definition = ecs.FargateTaskDefinition(
             self, "TaskDef",
             cpu=256,
             execution_role=ecsTaskExecutionRole,
             task_role=ecsTaskExecutionRole
         )
+        my_secret_from_name = secretsmanager.Secret.from_secret_name_v2(
+            self, "SecretFromName", Fn.import_value("secretName"))
 
         secrets = {
-            "SS_DATABASE_NAME": ecs.Secret.from_secrets_manager(
-                secretsmanager.Secret.from_secret_name_v2(self, 'SS_DATABASE_NAME', 'prod/php-app'), 'dbname'),
-            "SS_DATABASE_PASSWORD": ecs.Secret.from_secrets_manager(
-                secretsmanager.Secret.from_secret_name_v2(self, 'SS_DATABASE_PASSWORD', 'prod/php-app'), 'password')
+            "SS_DATABASE_NAME": ecs.Secret.from_secrets_manager(my_secret_from_name, "dbname"),
+            "SS_DATABASE_PASSWORD": ecs.Secret.from_secrets_manager(my_secret_from_name, "password"),
+            "SS_DATABASE_USERNAME": ecs.Secret.from_secrets_manager(my_secret_from_name, "username"),
+            "SS_DATABASE_SERVER": ecs.Secret.from_secrets_manager(my_secret_from_name, "host"),
         }
 
-        container = fargate_task_definition.add_container(
-            "WebContainer",
+        container = self.fargate_task_definition.add_container(
+            "php",
             # Use an image from ECR
             image=ecs.ContainerImage.from_registry(
-                "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/php"),
-            port_mappings=[ecs.PortMapping(container_port=8000)],
-            secrets=secrets
+                "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/php:latest"),
+            port_mappings=[ecs.PortMapping(container_port=80)],
+            secrets=secrets,
+            logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs"),
         )
 
-        fargate_service = ecs.FargateService(
-            self, "CDKFargateService", cluster=self.cluster, task_definition=fargate_task_definition,
+        self.fargate_service = ecs.FargateService(
+            self, "CDKFargateService",
+            service_name="php",
+            cluster=self.cluster, task_definition=self.fargate_task_definition, 
+            vpc_subnets=vpc_subnets, assign_public_ip=True,
+            security_groups=[security_group]
         )
 
         # fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(
@@ -68,10 +85,18 @@ class EcsCluster(Stack):
         #     description="Allow http inbound from VPC"
         # )
 
-        CfnOutput(
-            self, "Cluster",
-            value=self.cluster.cluster_name
+        self._cluster_name = CfnOutput(
+            self, "ClusterName",
+            value=self.cluster.cluster_name, export_name="ClusterName"
         )
+        self._service_name = CfnOutput(
+            self, "FargateServiceName",
+            value=self.fargate_service.service_name, export_name="FargateServiceName"
+        )
+        # self._fargate_task_definition = CfnOutput(
+        #     self, "FargateTaskDefinitionName",
+        #     value=self.fargate_task_definition, export_name="FargateTaskDefinitionName"
+        # )
         # CfnOutput(
         #     self,
         #     "CDKFargateLoadBalancerDNS",
