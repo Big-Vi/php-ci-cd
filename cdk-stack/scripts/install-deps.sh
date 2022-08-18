@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -13,36 +15,11 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import os
+set -o errexit
+set -o verbose
 
-from aws_cdk import (
-    aws_ec2 as ec2,
-    Environment
-)
+# Install local CDK CLI version
+npm install
 
-CDK_APP_NAME = "UserManagementBackend"
-CDK_APP_PYTHON_VERSION = "3.7"
-
-# pylint: disable=line-too-long
-GITHUB_CONNECTION_ARN = "arn:aws:codestar-connections:ap-southeast-2:090426658505:connection/62360df3-b12d-4a67-a60c-ccace1f34dc0"
-GITHUB_OWNER = "big-vi"
-GITHUB_REPO = "php-ci-cd"
-GITHUB_TRUNK_BRANCH = "main"
-
-DEV_ENV = Environment(
-    account=os.environ["CDK_DEFAULT_ACCOUNT"], region=os.environ["CDK_DEFAULT_REGION"]
-)
-
-DEV_DATABASE_INSTANCE_TYPE = ec2.InstanceType.of(
-    ec2.InstanceClass.BURSTABLE3,
-    ec2.InstanceSize.MICRO
-)
-
-PROD_DATABASE_INSTANCE_TYPE = ec2.InstanceType.of(
-    ec2.InstanceClass.BURSTABLE3,
-    ec2.InstanceSize.MICRO
-)
-
-PIPELINE_ENV = Environment(account="090426658505", region="ap-southeast-2")
-
-PROD_ENV = Environment(account="090426658505", region="ap-southeast-2")
+# Install project dependencies
+pip install -r requirements.txt
