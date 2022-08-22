@@ -177,12 +177,36 @@ class Pipeline(Stack):
             "phases": {
                 "install": {
                     "runtime-versions": {"python": constants.CDK_APP_PYTHON_VERSION},
-                    "commands": ["nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&", "timeout 15 sh -c \"until docker info; do echo .; sleep 1; done\""]
+                    "commands": [
+                        "nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&", 
+                        "timeout 15 sh -c \"until docker info; do echo .; sleep 1; done\""
+                    ]
+                },
+                "pre_build": {
+                    "commands": [
+                        "REPO_BASE=090426658505.dkr.ecr.ap-southeast-2.amazonaws.com",
+                        "REPO_NAME=php-$env",
+                        "TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)",
+                        "aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin \"$REPO_BASE\""
+                    ]
                 },
                 "build": {
-                    "commands": ["echo \"test\""]
+                    "commands": [
+                        "docker build -t \"$REPO_BASE /$REPO_NAME:latest\" --build-arg env=$env .",
+                        "docker tag \"$REPO_BASE /$REPO_NAME:latest\" \"$REPO_BASE /$REPO_NAME:$TAG\""
+                    ]
+                },
+                "post_build": {
+                    "commands": [
+                        "docker push $REPO_BASE/$REPO_NAME:$TAG",
+                        "docker push $REPO_BASE/$REPO_NAME:latest",
+                        "printf [{\"name\":\"$REPO_NAME\"\,\"imageUri\":\"090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/$REPO_NAME:$TAG\"}] > imagedefinitions.json"
+                    ]
                 }
-            }
+            },
+            # "artifacts": {
+            #     "files": ["imagedefinitions.json", "aws-cdk/cdk.out"]
+            # }
         }
         synth_codebuild_step = pipelines.CodeBuildStep(
             "Synth",
