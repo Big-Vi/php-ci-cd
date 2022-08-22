@@ -264,7 +264,7 @@ class Pipeline(Stack):
             # cli_version=Pipeline._get_cdk_cli_version(),
             # cross_account_keys=True,
             synth=synth_codebuild_step,
-            docker_enabled_for_synth=True,
+            # docker_enabled_for_synth=True,
         )
 
         # self._add_prod_stage(codepipeline)
