@@ -9,7 +9,7 @@ from constructs import Construct
 from database.infrastructure import Database
 
 
-class UserManagementBackend(Stage):
+class ECSApplication(Stage):
     def __init__(
         self,
         scope: Construct,

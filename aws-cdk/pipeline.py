@@ -162,7 +162,7 @@ from constructs import Construct
 
 import constants
 
-from deployment import UserManagementBackend
+from deployment import ECSApplication
 
 
 class Pipeline(Stack):
@@ -193,7 +193,8 @@ class Pipeline(Stack):
                 },
                 "build": {
                     "commands": [
-                        "docker build -t \"$REPO_BASE/$REPO_NAME:latest\" --build-arg env=" + constants.ENV + " .",
+                        "docker build -t \"$REPO_BASE/$REPO_NAME:latest\" --build-arg env=" +
+                        constants.ENV + " .",
                         "docker tag \"$REPO_BASE/$REPO_NAME:latest\" \"$REPO_BASE/$REPO_NAME:$TAG\""
                     ]
                 },
@@ -214,6 +215,10 @@ class Pipeline(Stack):
             input=codepipeline_source,
             build_environment=codebuild.BuildEnvironment(
                 privileged=True,
+                # build_image=codebuild.LinuxBuildImage.from_asset(
+                #     self, "Image",
+                #     directory="./docker-image"
+                # )
             ),
             partial_build_spec=codebuild.BuildSpec.from_object(
                 synth_python_version),
@@ -256,31 +261,19 @@ class Pipeline(Stack):
             self,
             "CodePipeline",
             # self_mutation=False,
-            # cli_version=Pipeline._get_cdk_cli_version(),
-            # cross_account_keys=True,
             synth=synth_codebuild_step,
+            # docker_enabled_for_self_mutation=True,
             # docker_enabled_for_synth=True,
         )
 
-        # self._add_prod_stage(codepipeline)
+        self._add_dev_stage(codepipeline)
 
-    @staticmethod
-    def _get_cdk_cli_version() -> str:
-        package_json_path = (
-            pathlib.Path(__file__).resolve().parent.joinpath(
-                "./aws-cdk/package.json")
-        )
-        with open(package_json_path) as package_json_file:
-            package_json = json.load(package_json_file)
-        cdk_cli_version = str(package_json["devDependencies"]["aws-cdk"])
-        return cdk_cli_version
-
-    def _add_prod_stage(self, codepipeline: pipelines.CodePipeline) -> None:
-        prod_stage = UserManagementBackend(
+    def _add_dev_stage(self, codepipeline: pipelines.CodePipeline) -> None:
+        prod_stage = ECSApplication(
             self,
-            f"{constants.CDK_APP_NAME}-Prod",
-            env=constants.PROD_ENV,
-            instance_type=constants.PROD_DATABASE_INSTANCE_TYPE,
+            f"{constants.CDK_APP_NAME}-Dev",
+            env=constants.DEV_ENV,
+            instance_type=constants.DEV_DATABASE_INSTANCE_TYPE,
         )
 
         codepipeline.add_stage(prod_stage)

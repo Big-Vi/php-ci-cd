@@ -5,7 +5,7 @@ import constants
 from pipeline import Pipeline
 # from rds.RDSStack import RDSStack
 from ecs.EcsCluster import EcsCluster
-from deployment import UserManagementBackend
+from deployment import ECSApplication
 
 app = cdk.App()
 
@@ -23,7 +23,7 @@ app = cdk.App()
 # pipeline.node.add_dependency(ecs_stack)
 
 # Development
-# UserManagementBackend(
+# ECSApplication(
 #     app,
 #     f"{constants.CDK_APP_NAME}-Dev",
 #     env=constants.DEV_ENV,

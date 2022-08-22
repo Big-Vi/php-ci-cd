@@ -20,7 +20,7 @@ from aws_cdk import (
     Environment
 )
 
-CDK_APP_NAME = "UserManagementBackend"
+CDK_APP_NAME = "ECSApplication"
 CDK_APP_PYTHON_VERSION = "3.7"
 
 # pylint: disable=line-too-long
