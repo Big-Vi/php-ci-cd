@@ -189,10 +189,10 @@ class Pipeline(Stack):
             commands=[
                 "npm install -g aws-cdk",  # Installs the cdk cli on Codebuild
                 # Instructs Codebuild to install required packages
-                "pip install -r requirements.txt",
+                "pip install -r ./aws-cdk/requirements.txt",
                 "cdk synth",
             ],
-            primary_output_directory="cdk.out",
+            primary_output_directory="./aws-cdk/cdk.out",
         )
         codepipeline = pipelines.CodePipeline(
             self,
@@ -207,7 +207,7 @@ class Pipeline(Stack):
     @staticmethod
     def _get_cdk_cli_version() -> str:
         package_json_path = (
-            pathlib.Path(__file__).resolve().parent.joinpath("package.json")
+            pathlib.Path(__file__).resolve().parent.joinpath("./aws-cdk/package.json")
         )
         with open(package_json_path) as package_json_file:
             package_json = json.load(package_json_file)

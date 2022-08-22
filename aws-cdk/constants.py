@@ -26,7 +26,7 @@ CDK_APP_PYTHON_VERSION = "3.7"
 # pylint: disable=line-too-long
 GITHUB_CONNECTION_ARN = "arn:aws:codestar-connections:ap-southeast-2:090426658505:connection/62360df3-b12d-4a67-a60c-ccace1f34dc0"
 GITHUB_OWNER = "big-vi"
-GITHUB_REPO = "aws-cdk-python"
+GITHUB_REPO = "php-ci-cd"
 GITHUB_TRUNK_BRANCH = "main"
 
 DEV_ENV = Environment(
