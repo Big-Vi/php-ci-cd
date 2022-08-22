@@ -154,6 +154,7 @@ from typing import Any
 
 from aws_cdk import (
     aws_codebuild as codebuild,
+    aws_iam as iam,
     pipelines,
     Stack
 )
@@ -178,7 +179,7 @@ class Pipeline(Stack):
                 "install": {
                     "runtime-versions": {"python": constants.CDK_APP_PYTHON_VERSION},
                     "commands": [
-                        "nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&", 
+                        "nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&",
                         "timeout 15 sh -c \"until docker info; do echo .; sleep 1; done\""
                     ]
                 },
@@ -205,7 +206,7 @@ class Pipeline(Stack):
                 }
             },
             # "artifacts": {
-            #     "files": ["imagedefinitions.json", "aws-cdk/cdk.out"]
+            #     "files": ["imagedefinitions.json"]
             # }
         }
         synth_codebuild_step = pipelines.CodeBuildStep(
@@ -225,13 +226,45 @@ class Pipeline(Stack):
                 "cdk synth",
             ],
             primary_output_directory="aws-cdk/cdk.out",
+            role_policy_statements=[
+                iam.PolicyStatement(
+                    effect=iam.Effect.ALLOW,
+                    actions=[
+                        "ecr:GetAuthorizationToken",
+                        "ecr:BatchCheckLayerAvailability",
+                        "ecr:GetDownloadUrlForLayer",
+                        "ecr:GetRepositoryPolicy",
+                        "ecr:DescribeRepositories",
+                        "ecr:ListImages",
+                        "ecr:DescribeImages",
+                        "ecr:BatchGetImage",
+                        "ecr:GetLifecyclePolicy",
+                        "ecr:GetLifecyclePolicyPreview",
+                        "ecr:ListTagsForResource",
+                        "ecr:DescribeImageScanFindings",
+                        "ecr:InitiateLayerUpload",
+                        "ecr:UploadLayerPart",
+                        "ecr:CompleteLayerUpload",
+                        "ecr:PutImage",
+                        "sts:AssumeRole"
+                    ],
+                    resources=["*"],
+                    conditions={
+                        "StringEquals": {
+                            "iam:_resource_tag/aws-cdk:bootstrap-role": "lookup"
+                        }
+                    }
+                )
+            ]
         )
         codepipeline = pipelines.CodePipeline(
             self,
             "CodePipeline",
+            # self_mutation=False,
             # cli_version=Pipeline._get_cdk_cli_version(),
             # cross_account_keys=True,
             synth=synth_codebuild_step,
+            docker_enabled_for_synth=True,
         )
 
         # self._add_prod_stage(codepipeline)
