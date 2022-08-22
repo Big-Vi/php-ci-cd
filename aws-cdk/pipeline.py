@@ -193,8 +193,8 @@ class Pipeline(Stack):
                 },
                 "build": {
                     "commands": [
-                        "docker build -t \"$REPO_BASE /$REPO_NAME:latest\" --build-arg env=" + constants.ENV + ".",
-                        "docker tag \"$REPO_BASE /$REPO_NAME:latest\" \"$REPO_BASE /$REPO_NAME:$TAG\""
+                        "docker build -t \"$REPO_BASE/$REPO_NAME:latest\" --build-arg env=" + constants.ENV + " .",
+                        "docker tag \"$REPO_BASE/$REPO_NAME:latest\" \"$REPO_BASE/$REPO_NAME:$TAG\""
                     ]
                 },
                 "post_build": {
