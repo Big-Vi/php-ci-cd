@@ -29,6 +29,8 @@ GITHUB_OWNER = "big-vi"
 GITHUB_REPO = "php-ci-cd"
 GITHUB_TRUNK_BRANCH = "main"
 
+ENV = "test"
+
 DEV_ENV = Environment(
     account=os.environ["CDK_DEFAULT_ACCOUNT"], region=os.environ["CDK_DEFAULT_REGION"]
 )
