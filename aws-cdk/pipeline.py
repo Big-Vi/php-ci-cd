@@ -187,6 +187,9 @@ class Pipeline(Stack):
         synth_codebuild_step = pipelines.CodeBuildStep(
             "Synth",
             input=codepipeline_source,
+            build_environment=codebuild.BuildEnvironment(
+                privileged=True,
+            ),
             partial_build_spec=codebuild.BuildSpec.from_object(
                 synth_python_version),
             # install_commands=["./scripts/install-deps.sh"],
@@ -212,7 +215,8 @@ class Pipeline(Stack):
     @staticmethod
     def _get_cdk_cli_version() -> str:
         package_json_path = (
-            pathlib.Path(__file__).resolve().parent.joinpath("./aws-cdk/package.json")
+            pathlib.Path(__file__).resolve().parent.joinpath(
+                "./aws-cdk/package.json")
         )
         with open(package_json_path) as package_json_file:
             package_json = json.load(package_json_file)
@@ -226,5 +230,5 @@ class Pipeline(Stack):
             env=constants.PROD_ENV,
             instance_type=constants.PROD_DATABASE_INSTANCE_TYPE,
         )
-        
+
         codepipeline.add_stage(prod_stage)
