@@ -8,12 +8,12 @@ phases:
     pre_build:
         commands:
             - REPO_BASE=090426658505.dkr.ecr.ap-southeast-2.amazonaws.com
-            - REPO_NAME=php-$env
+            - REPO_NAME=php-test
             - TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)
             - aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin "$REPO_BASE"
     build:
         commands:
-            - docker build -t "$REPO_BASE/$REPO_NAME:latest" --build-arg env=$env .
+            - docker build -t "$REPO_BASE/$REPO_NAME:latest" --build-arg env=test .
             - docker tag "$REPO_BASE/$REPO_NAME:latest" "$REPO_BASE/$REPO_NAME:$TAG"
     post_build:
         commands:
