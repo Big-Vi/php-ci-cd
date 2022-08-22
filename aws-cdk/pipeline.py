@@ -187,12 +187,13 @@ class Pipeline(Stack):
                 synth_python_version),
             # install_commands=["./scripts/install-deps.sh"],
             commands=[
-                "npm --prefix ./aws-cdk install -g aws-cdk",  # Installs the cdk cli on Codebuild
+                "cd aws-cdk",  # Installs the cdk cli on Codebuild
+                "npm install -g aws-cdk",
                 # Instructs Codebuild to install required packages
-                "pip install -r ./aws-cdk/requirements.txt",
+                "pip install -r requirements.txt",
                 "cdk synth",
             ],
-            primary_output_directory="./aws-cdk/cdk.out",
+            primary_output_directory="aws-cdk/cdk.out",
         )
         codepipeline = pipelines.CodePipeline(
             self,
