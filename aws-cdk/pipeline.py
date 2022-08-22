@@ -248,12 +248,7 @@ class Pipeline(Stack):
                         "ecr:PutImage",
                         "sts:AssumeRole"
                     ],
-                    resources=["*"],
-                    conditions={
-                        "StringEquals": {
-                            "iam:_resource_tag/aws-cdk:bootstrap-role": "lookup"
-                        }
-                    }
+                    resources=["*"]
                 )
             ]
         )
