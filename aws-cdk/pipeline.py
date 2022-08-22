@@ -187,7 +187,7 @@ class Pipeline(Stack):
                 synth_python_version),
             # install_commands=["./scripts/install-deps.sh"],
             commands=[
-                "npm install -g aws-cdk",  # Installs the cdk cli on Codebuild
+                "npm --prefix ./aws-cdk install -g aws-cdk",  # Installs the cdk cli on Codebuild
                 # Instructs Codebuild to install required packages
                 "pip install -r ./aws-cdk/requirements.txt",
                 "cdk synth",
