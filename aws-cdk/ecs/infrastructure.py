@@ -8,9 +8,9 @@ from aws_cdk import (
 from constructs import Construct
 
 
-class EcsCluster(Stack):
+class EcsCluster(Construct):
 
-    def __init__(self, scope: Construct, id: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, database_secret_name: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         vpc = ec2.Vpc.from_lookup(
@@ -49,7 +49,7 @@ class EcsCluster(Stack):
             task_role=ecsTaskExecutionRole
         )
         my_secret_from_name = secretsmanager.Secret.from_secret_name_v2(
-            self, "SecretFromName", Fn.import_value("secretName"))
+            self, "SecretFromName", database_secret_name)
 
         secrets = {
             "SS_DATABASE_NAME": ecs.Secret.from_secrets_manager(my_secret_from_name, "dbname"),
@@ -62,7 +62,7 @@ class EcsCluster(Stack):
             "php",
             # Use an image from ECR
             image=ecs.ContainerImage.from_registry(
-                "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/php:latest"),
+                "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/php-test:latest"),
             port_mappings=[ecs.PortMapping(container_port=80)],
             secrets=secrets,
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs"),

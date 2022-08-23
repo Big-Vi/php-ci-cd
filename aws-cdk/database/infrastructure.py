@@ -9,7 +9,7 @@ from aws_cdk.aws_secretsmanager import Secret
 
 class Database(Construct):
 
-    def __init__(self, scope: Construct, id: str, instance_type: ec2.InstanceType, ** kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, instance_type: ec2.InstanceType, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         @property

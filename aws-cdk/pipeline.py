@@ -220,8 +220,8 @@ class Pipeline(Stack):
                 #     directory="./docker-image"
                 # )
             ),
-            partial_build_spec=codebuild.BuildSpec.from_object(
-                synth_python_version),
+            # partial_build_spec=codebuild.BuildSpec.from_object(
+            #     synth_python_version),
             # install_commands=["./scripts/install-deps.sh"],
             commands=[
                 "cd aws-cdk",  # Installs the cdk cli on Codebuild

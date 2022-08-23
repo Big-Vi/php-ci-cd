@@ -4,7 +4,7 @@ import aws_cdk as cdk
 import constants
 from pipeline import Pipeline
 # from rds.RDSStack import RDSStack
-from ecs.EcsCluster import EcsCluster
+# from ecs.EcsCluster import EcsCluster
 from deployment import ECSApplication
 
 app = cdk.App()

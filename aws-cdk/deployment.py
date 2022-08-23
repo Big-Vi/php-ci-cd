@@ -7,6 +7,7 @@ from aws_cdk import (
 from constructs import Construct
 
 from database.infrastructure import Database
+from ecs.infrastructure import EcsCluster
 
 
 class ECSApplication(Stage):
@@ -22,7 +23,12 @@ class ECSApplication(Stage):
 
         stateful = Stack(self, "Stateful")
         database = Database(
-            stateful, "Database", instance_type=instance_type
+            stateful, "Database", instance_type = instance_type
         )
 
-        self._secret_name = database._secret_name
+        stateless = Stack(self, "Stateless")
+        ecs = EcsCluster(
+            stateless,
+            "ECS",
+            database_secret_name = database._secret_name
+        )
