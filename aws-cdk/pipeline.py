@@ -189,8 +189,9 @@ class Pipeline(Stack):
                         "REPO_NAME=" + constants.CDK_APP_NAME,
                         "TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)",
                         "aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin \"$REPO_BASE\"",
-                        "output=aws ecr describe-repositories --repository-names \"$REPO_NAME\" 2>&1"
-                        "if [$? -ne 0] then if echo ${output} | grep - q RepositoryNotFoundException then aws ecr create-repository - -repository-name ${REPO_NAME} else > &2 echo ${output} fi fi"
+                        "aws ecr create-repository --repository-name \"$REPO_NAME\""
+                        # "output=$(aws ecr describe-repositories --repository-names ${REPO_NAME} 2>&1)",
+                        # "if [$? -ne 0] then if echo ${output} | grep - q RepositoryNotFoundException then aws ecr create-repository - -repository-name ${REPO_NAME} else > &2 echo ${output} fi fi"
                     ]
                 },
                 "build": {
