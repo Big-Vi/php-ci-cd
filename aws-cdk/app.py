@@ -8,12 +8,10 @@ from Base import Base
 app = cdk.App()
 
 # ECR
-base = Base(app, f"{constants.CDK_APP_NAME}-Base")
+Base(app, f"{constants.CDK_APP_NAME}-Base")
 
 # Pipeline
 pipeline = Pipeline(app, f"{constants.CDK_APP_NAME}-Pipeline",
                  env=constants.PIPELINE_ENV)
-
-pipeline.add_dependency(base)
 
 app.synth()
