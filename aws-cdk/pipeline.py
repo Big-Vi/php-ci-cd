@@ -188,7 +188,8 @@ class Pipeline(Stack):
                         "REPO_BASE=090426658505.dkr.ecr.ap-southeast-2.amazonaws.com",
                         "REPO_NAME=" + constants.CDK_APP_NAME,
                         "TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)",
-                        "aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin \"$REPO_BASE\""
+                        "aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin \"$REPO_BASE\"",
+                        "./scripts/ecr.sh"
                     ]
                 },
                 "build": {
