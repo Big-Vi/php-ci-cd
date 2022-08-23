@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 
 from aws_cdk import (
     aws_ec2 as ec2,
@@ -17,18 +17,20 @@ class ECSApplication(Stage):
         id_: str,
         *,
         instance_type: ec2.InstanceType,
+        infra: Dict[str, str],
         **kwargs: Any,
     ):
         super().__init__(scope, id_, **kwargs)
 
         stateful = Stack(self, "Stateful")
         database = Database(
-            stateful, "Database", instance_type = instance_type
+            stateful, "Database", infra=infra
         )
 
         stateless = Stack(self, "Stateless")
         ecs = EcsCluster(
             stateless,
             "ECS",
-            database_secret_name = database._secret_name
+            database_secret_name=database._secret_name,
+            infra=infra
         )

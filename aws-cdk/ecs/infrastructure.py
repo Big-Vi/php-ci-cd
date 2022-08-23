@@ -1,3 +1,4 @@
+from typing import Dict
 from aws_cdk import (
     aws_ec2 as ec2,
     aws_ecs as ecs,
@@ -7,28 +8,30 @@ from aws_cdk import (
 )
 from constructs import Construct
 
+import constants
+
 
 class EcsCluster(Construct):
 
-    def __init__(self, scope: Construct, id: str, database_secret_name: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, database_secret_name: str, infra: Dict[str, str], **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         vpc = ec2.Vpc.from_lookup(
             self, "VPC",
-            vpc_id="vpc-0a2eb88f37dd4d313",
+            vpc_id=infra["VPC_ID"],
         )
 
         vpc_subnets = ec2.SubnetSelection(
             subnets=[
                 ec2.Subnet.from_subnet_id(
-                    self, "subnet1", "subnet-025da55a2ea069297"),
+                    self, "subnet1", infra["SUBNET_IDS"]["SUBNET_ID_1"]),
                 ec2.Subnet.from_subnet_id(
-                    self, "subnet2", "subnet-090a11611b7237db6")
+                    self, "subnet2", infra["SUBNET_IDS"]["SUBNET_ID_2"])
             ]
         )
 
         security_group = ec2.SecurityGroup.from_lookup_by_id(
-            self, "SG", "sg-0cf6eb022d5597677")
+            self, "SG", infra["SG_ID"])
 
         self.cluster = ecs.Cluster(
             self, 'EcsCluster',
@@ -59,10 +62,10 @@ class EcsCluster(Construct):
         }
 
         container = self.fargate_task_definition.add_container(
-            "php",
+            constants.CDK_APP_NAME,
             # Use an image from ECR
             image=ecs.ContainerImage.from_registry(
-                "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/php-test:latest"),
+                "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/" + constants.CDK_APP_NAME + ":latest"),
             port_mappings=[ecs.PortMapping(container_port=80)],
             secrets=secrets,
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs"),
@@ -70,8 +73,8 @@ class EcsCluster(Construct):
 
         self.fargate_service = ecs.FargateService(
             self, "CDKFargateService",
-            service_name="php",
-            cluster=self.cluster, task_definition=self.fargate_task_definition, 
+            service_name=constants.CDK_APP_NAME,
+            cluster=self.cluster, task_definition=self.fargate_task_definition,
             vpc_subnets=vpc_subnets, assign_public_ip=True,
             security_groups=[security_group]
         )

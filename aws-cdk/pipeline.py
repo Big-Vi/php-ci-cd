@@ -186,7 +186,7 @@ class Pipeline(Stack):
                 "pre_build": {
                     "commands": [
                         "REPO_BASE=090426658505.dkr.ecr.ap-southeast-2.amazonaws.com",
-                        "REPO_NAME=php-" + constants.ENV,
+                        "REPO_NAME=" + constants.CDK_APP_NAME,
                         "TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)",
                         "aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin \"$REPO_BASE\""
                     ]
@@ -220,8 +220,8 @@ class Pipeline(Stack):
                 #     directory="./docker-image"
                 # )
             ),
-            # partial_build_spec=codebuild.BuildSpec.from_object(
-            #     synth_python_version),
+            partial_build_spec=codebuild.BuildSpec.from_object(
+                synth_python_version),
             # install_commands=["./scripts/install-deps.sh"],
             commands=[
                 "cd aws-cdk",  # Installs the cdk cli on Codebuild
@@ -274,6 +274,7 @@ class Pipeline(Stack):
             f"{constants.CDK_APP_NAME}-Dev",
             env=constants.DEV_ENV,
             instance_type=constants.DEV_DATABASE_INSTANCE_TYPE,
+            infra=constants.INFRA
         )
 
         codepipeline.add_stage(prod_stage)
