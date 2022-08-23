@@ -3,10 +3,17 @@ import aws_cdk as cdk
 
 import constants
 from pipeline import Pipeline
+from Base import Base
 
 app = cdk.App()
 
+# ECR
+base = Base(app, f"{constants.CDK_APP_NAME}-Base")
+
 # Pipeline
-Pipeline(app, f"{constants.CDK_APP_NAME}-Pipeline", env=constants.PIPELINE_ENV)
+pipeline = Pipeline(app, f"{constants.CDK_APP_NAME}-Pipeline",
+                 env=constants.PIPELINE_ENV)
+
+pipeline.add_dependency(base)
 
 app.synth()
