@@ -189,7 +189,8 @@ class Pipeline(Stack):
                         "REPO_NAME=" + constants.CDK_APP_NAME,
                         "TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)",
                         "aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin \"$REPO_BASE\"",
-                        "./scripts/ecr.sh"
+                        "output=aws ecr describe-repositories --repository-names \"$REPO_NAME\" 2>&1"
+                        "if [$? -ne 0] then if echo ${output} | grep - q RepositoryNotFoundException then aws ecr create-repository - -repository-name ${REPO_NAME} else > &2 echo ${output} fi fi"
                     ]
                 },
                 "build": {
@@ -261,7 +262,7 @@ class Pipeline(Stack):
         codepipeline = pipelines.CodePipeline(
             self,
             "CodePipeline",
-            # self_mutation=False,
+            self_mutation=False,
             synth=synth_codebuild_step,
             # docker_enabled_for_self_mutation=True,
             # docker_enabled_for_synth=True,
