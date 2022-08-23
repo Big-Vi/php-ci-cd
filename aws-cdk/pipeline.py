@@ -174,6 +174,7 @@ class Pipeline(Stack):
             f"{constants.GITHUB_OWNER}/{constants.GITHUB_REPO}",
             constants.GITHUB_TRUNK_BRANCH,
             connection_arn=constants.GITHUB_CONNECTION_ARN,
+            trigger_on_push=True,
         )
         synth_python_version = {
             "phases": {
