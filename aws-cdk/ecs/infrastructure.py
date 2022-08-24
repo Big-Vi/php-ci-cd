@@ -64,8 +64,7 @@ class EcsCluster(Construct):
         container = self.fargate_task_definition.add_container(
             constants.CDK_APP_NAME,
             # Use an image from ECR
-            image=ecs.ContainerImage.from_registry(
-                "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/" + constants.CDK_APP_NAME + ":b2b5c91e"),
+            image=ecs.ContainerImage.from_registry(constants.CDK_APP_NAME),
             port_mappings=[ecs.PortMapping(container_port=80)],
             secrets=secrets,
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs"),
