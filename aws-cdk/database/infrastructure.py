@@ -1,10 +1,12 @@
+import constants
 from typing import Dict
 from aws_cdk import (
     aws_ec2 as ec2,
     aws_rds as rds,
-    RemovalPolicy, 
+    RemovalPolicy,
 )
 from constructs import Construct
+
 
 class Database(Construct):
 
@@ -39,7 +41,9 @@ class Database(Construct):
             security_groups=[security_group],
             port=3306,
             instance_type=infra["DEV_DATABASE_INSTANCE_TYPE"],
-            credentials=rds.Credentials.from_generated_secret("admin"),
+            credentials=rds.Credentials.from_generated_secret(
+                "admin", secret_name=constants.CDK_APP_NAME
+            ),
             publicly_accessible=True,
             removal_policy=RemovalPolicy.DESTROY,
             deletion_protection=False
