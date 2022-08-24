@@ -12,6 +12,6 @@ Base(app, f"{constants.CDK_APP_NAME}-Base")
 
 # Pipeline
 pipeline = Pipeline(app, f"{constants.CDK_APP_NAME}-Pipeline",
-                 env=constants.PIPELINE_ENV)
+                    env=constants.AWS_PIPELINE_ENV)
 
 app.synth()

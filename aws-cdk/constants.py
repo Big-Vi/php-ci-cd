@@ -31,10 +31,6 @@ GITHUB_TRUNK_BRANCH = "main"
 
 ENV = "test"
 
-DEV_ENV = Environment(
-    account=os.environ["CDK_DEFAULT_ACCOUNT"], region=os.environ["CDK_DEFAULT_REGION"]
-)
-
 DEV_DATABASE_INSTANCE_TYPE = ec2.InstanceType.of(
     ec2.InstanceClass.BURSTABLE3,
     ec2.InstanceSize.MICRO
@@ -57,6 +53,10 @@ INFRA = {
     "PROD_DATABASE_INSTANCE_TYPE": PROD_DATABASE_INSTANCE_TYPE
 }
 
-PIPELINE_ENV = Environment(account="090426658505", region="ap-southeast-2")
+AWS_PIPELINE_ENV = Environment(account="090426658505", region="ap-southeast-2")
 
-PROD_ENV = Environment(account="090426658505", region="ap-southeast-2")
+AWS_DEV_ENV = Environment(
+    account=os.environ["CDK_DEFAULT_ACCOUNT"], region=os.environ["CDK_DEFAULT_REGION"]
+)
+
+AWS_PROD_ENV = Environment(account="090426658505", region="ap-southeast-2")

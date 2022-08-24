@@ -10,7 +10,7 @@ from constructs import Construct
 
 class Database(Construct):
 
-    def __init__(self, scope: Construct, id: str, infra: Dict[str, str], **kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, infra: Dict[str, str], deploy_env=str, ** kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         vpc = ec2.Vpc.from_lookup(
@@ -40,9 +40,9 @@ class Database(Construct):
             vpc_subnets=vpc_subnets,
             security_groups=[security_group],
             port=3306,
-            instance_type=infra["DEV_DATABASE_INSTANCE_TYPE"],
+            instance_type=infra["DEV_DATABASE_INSTANCE_TYPE"] if deploy_env == "dev" else infra["PROD_DATABASE_INSTANCE_TYPE"],
             credentials=rds.Credentials.from_generated_secret(
-                "admin", secret_name=constants.CDK_APP_NAME
+                "admin", secret_name=constants.CDK_APP_NAME + "_" + deploy_env
             ),
             publicly_accessible=True,
             removal_policy=RemovalPolicy.DESTROY,

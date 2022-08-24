@@ -204,7 +204,7 @@ class Pipeline(Stack):
                 "post_build": {
                     "commands": [
                         "docker push $REPO_BASE/$REPO_NAME:$TAG",
-                        # "docker push $REPO_BASE/$REPO_NAME:latest",
+                        "docker push $REPO_BASE/$REPO_NAME:latest",
                         "printf [{\"name\":\"$REPO_NAME\"\,\"imageUri\":\"090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/$REPO_NAME:$TAG\"}] > imagedefinitions.json"
                     ]
                 }
@@ -277,9 +277,9 @@ class Pipeline(Stack):
         prod_stage = ECSApplication(
             self,
             f"{constants.CDK_APP_NAME}-Dev",
-            env=constants.DEV_ENV,
-            instance_type=constants.DEV_DATABASE_INSTANCE_TYPE,
-            infra=constants.INFRA
+            env=constants.AWS_DEV_ENV,
+            infra=constants.INFRA,
+            deploy_env="dev"
         )
 
         codepipeline.add_stage(prod_stage)

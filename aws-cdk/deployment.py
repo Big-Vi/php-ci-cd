@@ -16,7 +16,7 @@ class ECSApplication(Stage):
         scope: Construct,
         id_: str,
         *,
-        instance_type: ec2.InstanceType,
+        deploy_env: str,
         infra: Dict[str, str],
         **kwargs: Any,
     ):
@@ -24,7 +24,7 @@ class ECSApplication(Stage):
 
         stateful = Stack(self, "Stateful")
         database = Database(
-            stateful, "Database", infra=infra
+            stateful, "Database", infra=infra, deploy_env=deploy_env
         )
 
         stateless = Stack(self, "Stateless")
