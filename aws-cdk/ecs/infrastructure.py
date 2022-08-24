@@ -2,6 +2,7 @@ from typing import Dict
 from aws_cdk import (
     aws_ec2 as ec2,
     aws_ecs as ecs,
+    aws_ecr as ecr,
     aws_iam as iam,
     aws_secretsmanager as secretsmanager,
     Stack, CfnOutput, Fn
@@ -13,7 +14,7 @@ import constants
 
 class EcsCluster(Construct):
 
-    def __init__(self, scope: Construct, id: str, database_secret_name: str, infra: Dict[str, str], **kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, database_secret_name: str, infra: Dict[str, str], Git_tag: str, ** kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         vpc = ec2.Vpc.from_lookup(
@@ -61,10 +62,15 @@ class EcsCluster(Construct):
             "SS_DATABASE_SERVER": ecs.Secret.from_secrets_manager(my_secret_from_name, "host"),
         }
 
+        # app_ecr = ecr.Repository.from_repository_name(
+        #     self, "ECR", constants.CDK_APP_NAME)
+        # print(app_ecr.image_tags)
+
         container = self.fargate_task_definition.add_container(
             constants.CDK_APP_NAME,
             # Use an image from ECR
-            image=ecs.ContainerImage.from_registry(constants.CDK_APP_NAME),
+            image=ecs.ContainerImage.from_registry(
+                "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/" + constants.CDK_APP_NAME),
             port_mappings=[ecs.PortMapping(container_port=80)],
             secrets=secrets,
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs"),

@@ -203,7 +203,7 @@ class Pipeline(Stack):
                 "post_build": {
                     "commands": [
                         "docker push $REPO_BASE/$REPO_NAME:$TAG",
-                        "docker push $REPO_BASE/$REPO_NAME:latest",
+                        # "docker push $REPO_BASE/$REPO_NAME:latest",
                         "printf [{\"name\":\"$REPO_NAME\"\,\"imageUri\":\"090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/$REPO_NAME:$TAG\"}] > imagedefinitions.json"
                     ]
                 }
