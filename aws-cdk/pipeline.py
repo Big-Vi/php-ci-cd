@@ -190,8 +190,8 @@ class Pipeline(Stack):
                         "REPO_BASE=090426658505.dkr.ecr.ap-southeast-2.amazonaws.com",
                         "REPO_NAME=" + constants.CDK_APP_NAME,
                         "TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)",
-                        "aws secretsmanager create-secret --name " + constants.CDK_APP_NAME + "/git --description \"Storing Git commit tag\" \
-                            --secret-string '{\"commit-hash\": \"$TAG\"}'",
+                        "aws secretsmanager update-secret --secret-id " + constants.CDK_APP_NAME + "/git \
+                            --secret-string '{\"commit-hash\": \"'${TAG}'\"}'",
                         "aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin \"$REPO_BASE\"",
                     ]
                 },
@@ -257,7 +257,8 @@ class Pipeline(Stack):
                         "ecr:PutImage",
                         "ecr:CreateRepository",
                         "sts:AssumeRole",
-                        "secretsmanager:CreateSecret"
+                        "secretsmanager:CreateSecret",
+                        "secretsmanager:UpdateSecret"
                     ],
                     resources=["*"]
                 )

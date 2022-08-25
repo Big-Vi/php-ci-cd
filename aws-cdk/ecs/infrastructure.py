@@ -5,6 +5,7 @@ from aws_cdk import (
     aws_ecr as ecr,
     aws_iam as iam,
     aws_secretsmanager as secretsmanager,
+    SecretValue,
     Stack, CfnOutput, Fn
 )
 from constructs import Construct
@@ -62,15 +63,15 @@ class EcsCluster(Construct):
             "SS_DATABASE_SERVER": ecs.Secret.from_secrets_manager(my_secret_from_name, "host"),
         }
 
-        # app_ecr = ecr.Repository.from_repository_name(
-        #     self, "ECR", constants.CDK_APP_NAME)
-        # print(app_ecr.image_tags)
+        my_secret_from_git = SecretValue.secrets_manager(
+            "php-ci-cd/git", json_field="commit-hash")
 
         container = self.fargate_task_definition.add_container(
             constants.CDK_APP_NAME,
             # Use an image from ECR
             image=ecs.ContainerImage.from_registry(
-                "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/" + constants.CDK_APP_NAME),
+                "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/" + \
+                constants.CDK_APP_NAME + ":" + my_secret_from_git.to_string()),
             port_mappings=[ecs.PortMapping(container_port=80)],
             secrets=secrets,
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs"),
