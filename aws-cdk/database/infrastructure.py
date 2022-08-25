@@ -42,7 +42,7 @@ class Database(Construct):
             port=3306,
             instance_type=infra["DEV_DATABASE_INSTANCE_TYPE"] if deploy_env == "dev" else infra["PROD_DATABASE_INSTANCE_TYPE"],
             credentials=rds.Credentials.from_generated_secret(
-                "admin", secret_name=constants.CDK_APP_NAME + "_" + deploy_env
+                "admin", secret_name=deploy_env+ "/" + constants.CDK_APP_NAME
             ),
             publicly_accessible=True,
             removal_policy=RemovalPolicy.DESTROY,

@@ -189,8 +189,9 @@ class Pipeline(Stack):
                     "commands": [
                         "REPO_BASE=090426658505.dkr.ecr.ap-southeast-2.amazonaws.com",
                         "REPO_NAME=" + constants.CDK_APP_NAME,
-                        # "aws secretsmanager create-secret --name example/secretKey --description \"Example Secret Key\" --secret-string \"super-secret-key\"",
                         "TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)",
+                        "aws secretsmanager create-secret --name " + constants.CDK_APP_NAME + "/git-tag --description \"Storing Git commit tag\" \
+                            --secret-string \"{\"commit-hash\": \"$TAG\"}\"",
                         "aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin \"$REPO_BASE\"",
                     ]
                 },
