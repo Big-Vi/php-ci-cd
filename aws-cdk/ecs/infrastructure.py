@@ -64,7 +64,7 @@ class EcsCluster(Construct):
         }
 
         my_secret_from_git = SecretValue.secrets_manager(
-            "php-ci-cd/git", json_field="commit-hash")
+            constants.CDK_APP_NAME + "/git-hash", json_field="commit-hash")
 
         container = self.fargate_task_definition.add_container(
             constants.CDK_APP_NAME,

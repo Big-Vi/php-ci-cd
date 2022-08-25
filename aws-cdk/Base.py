@@ -22,7 +22,7 @@ class Base(Stack):
         )
 
         # Secret for git commit hash - needed for CloudFormation dynamically pull it.
-        # secretsmanager.Secret(
-        #     self, "secret-git-commit-hash",
-        #     secret_name = "php-ci-cd/git"
-        # )
+        secretsmanager.Secret(
+            self, "secret-git-commit-hash",
+            secret_name = constants.CDK_APP_NAME + "/git-hash"
+        )

@@ -155,6 +155,7 @@ from typing import Any
 from aws_cdk import (
     aws_codebuild as codebuild,
     aws_iam as iam,
+    aws_secretsmanager as secretsmanager,
     aws_ecr as ecr,
     pipelines,
     Stack, RemovalPolicy
@@ -167,7 +168,7 @@ from deployment import ECSApplication
 
 
 class Pipeline(Stack):
-    def __init__(self, scope: Construct, id_: str, **kwargs: Any):
+    def __init__(self, scope: Construct, id_: str, ** kwargs: Any):
         super().__init__(scope, id_, **kwargs)
 
         codepipeline_source = pipelines.CodePipelineSource.connection(
@@ -190,7 +191,7 @@ class Pipeline(Stack):
                         "REPO_BASE=090426658505.dkr.ecr.ap-southeast-2.amazonaws.com",
                         "REPO_NAME=" + constants.CDK_APP_NAME,
                         "TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)",
-                        "aws secretsmanager update-secret --secret-id " + constants.CDK_APP_NAME + "/git \
+                        "aws secretsmanager update-secret --secret-id " + constants.CDK_APP_NAME + "/git-hash \
                             --secret-string '{\"commit-hash\": \"'${TAG}'\"}'",
                         "aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin \"$REPO_BASE\"",
                     ]
