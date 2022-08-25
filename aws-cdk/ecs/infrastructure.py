@@ -4,6 +4,7 @@ from aws_cdk import (
     aws_ecs as ecs,
     aws_ecr as ecr,
     aws_iam as iam,
+    aws_ecs_patterns as ecs_patterns,
     aws_secretsmanager as secretsmanager,
     SecretValue,
     Stack, CfnOutput, Fn
@@ -76,18 +77,22 @@ class EcsCluster(Construct):
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs"),
         )
 
-        self.fargate_service = ecs.FargateService(
+        # self.fargate_service = ecs.FargateService(
+        #     self, "CDKFargateService",
+        #     service_name=constants.CDK_APP_NAME,
+        #     cluster=self.cluster, task_definition=self.fargate_task_definition,
+        #     vpc_subnets=vpc_subnets, assign_public_ip=True,
+        #     security_groups=[security_group]
+        # )
+
+        self.fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(
             self, "CDKFargateService",
             service_name=constants.CDK_APP_NAME,
             cluster=self.cluster, task_definition=self.fargate_task_definition,
-            vpc_subnets=vpc_subnets, assign_public_ip=True,
+            task_subnets=vpc_subnets, assign_public_ip=True,
             security_groups=[security_group]
         )
-
-        # fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(
-        #     self, "CDKFargateService", cluster=self.cluster, task_definition=fargate_task_definition,
-        # )
-        # fargate_service.service.connections.security_groups[0].add_ingress_rule(
+        # self.fargate_service.service.connections.security_groups[0].add_ingress_rule(
         #     peer=ec2.Peer.ipv4(vpc.vpc_cidr_block),
         #     connection=ec2.Port.tcp(80),
         #     description="Allow http inbound from VPC"
@@ -97,10 +102,10 @@ class EcsCluster(Construct):
             self, "ClusterName",
             value=self.cluster.cluster_name, export_name="ClusterName"
         )
-        self._service_name = CfnOutput(
-            self, "FargateServiceName",
-            value=self.fargate_service.service_name, export_name="FargateServiceName"
-        )
+        # self._service_name = CfnOutput(
+        #     self, "FargateServiceName",
+        #     value=self.fargate_service.service_name, export_name="FargateServiceName"
+        # )
         # self._fargate_task_definition = CfnOutput(
         #     self, "FargateTaskDefinitionName",
         #     value=self.fargate_task_definition, export_name="FargateTaskDefinitionName"
