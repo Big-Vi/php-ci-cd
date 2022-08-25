@@ -191,7 +191,7 @@ class Pipeline(Stack):
                         "REPO_NAME=" + constants.CDK_APP_NAME,
                         "TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)",
                         "aws secretsmanager create-secret --name " + constants.CDK_APP_NAME + "/git-tag --description \"Storing Git commit tag\" \
-                            --secret-string \"{\"commit-hash\": \"$TAG\"}\"",
+                            --secret-string '{\"commit-hash\": \"$TAG\"}'",
                         "aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin \"$REPO_BASE\"",
                     ]
                 },
