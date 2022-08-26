@@ -6,6 +6,7 @@ from aws_cdk import (
     aws_iam as iam,
     aws_ecs_patterns as ecs_patterns,
     aws_secretsmanager as secretsmanager,
+    aws_applicationautoscaling as appscaling,
     SecretValue,
     Stack, CfnOutput, Fn
 )
@@ -77,14 +78,6 @@ class EcsCluster(Construct):
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs"),
         )
 
-        # self.fargate_service = ecs.FargateService(
-        #     self, "CDKFargateService",
-        #     service_name=constants.CDK_APP_NAME,
-        #     cluster=self.cluster, task_definition=self.fargate_task_definition,
-        #     vpc_subnets=vpc_subnets, assign_public_ip=True,
-        #     security_groups=[security_group]
-        # )
-
         self.fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(
             self, "CDKFargateService",
             service_name=constants.CDK_APP_NAME,
@@ -92,11 +85,24 @@ class EcsCluster(Construct):
             task_subnets=vpc_subnets, assign_public_ip=True,
             security_groups=[security_group]
         )
-        # self.fargate_service.service.connections.security_groups[0].add_ingress_rule(
-        #     peer=ec2.Peer.ipv4(vpc.vpc_cidr_block),
-        #     connection=ec2.Port.tcp(80),
-        #     description="Allow http inbound from VPC"
-        # )
+
+        # Cron job
+        scheduled_fargate_task = ecs_patterns.ScheduledFargateTask(
+            self, "ScheduledFargateTask",
+            cluster=self.cluster,
+            scheduled_fargate_task_image_options=ecs_patterns.ScheduledFargateTaskImageOptions(
+                image=ecs.ContainerImage.from_registry(
+                    "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/" + constants.CDK_APP_NAME + ":" + my_secret_from_git.to_string()),
+                memory_limit_mib=512,
+                command=[
+                    'sh', '-c',
+                    'ping -c 3 google.com',
+                ],
+            ),
+            subnet_selection=vpc_subnets,
+            schedule=appscaling.Schedule.cron(hour="*", minute="2"),
+            platform_version=ecs.FargatePlatformVersion.LATEST
+        )
 
         self._cluster_name = CfnOutput(
             self, "ClusterName",
