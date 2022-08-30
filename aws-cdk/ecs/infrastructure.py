@@ -96,11 +96,12 @@ class EcsCluster(Construct):
                 memory_limit_mib=512,
                 command=[
                     'sh', '-c',
-                    'ping -c 3 google.com',
+                    'apt-get update && apt-get install iputils-ping && ping -c 3 google.com',
                 ],
             ),
             subnet_selection=vpc_subnets,
-            schedule=appscaling.Schedule.cron(hour="*", minute="2"),
+            schedule=appscaling.Schedule.cron(
+                hour="*", minute="*"),
             platform_version=ecs.FargatePlatformVersion.LATEST
         )
 
