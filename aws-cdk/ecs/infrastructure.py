@@ -53,7 +53,7 @@ class EcsCluster(Construct):
             self, "TaskDef",
             cpu=256,
             execution_role=ecsTaskExecutionRole,
-            task_role=ecsTaskExecutionRole
+            task_role=ecsTaskExecutionRole,
         )
         my_secret_from_name = secretsmanager.Secret.from_secret_name_v2(
             self, "SecretFromName", database_secret_name)
@@ -76,6 +76,10 @@ class EcsCluster(Construct):
             port_mappings=[ecs.PortMapping(container_port=80)],
             secrets=secrets,
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs"),
+            command=[
+                'sh', '-c',
+                'apt-get update && apt-get install iputils-ping && ping -c 3 google.com',
+            ]
         )
 
         self.fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(
@@ -90,15 +94,18 @@ class EcsCluster(Construct):
         scheduled_fargate_task = ecs_patterns.ScheduledFargateTask(
             self, "ScheduledFargateTask",
             cluster=self.cluster,
-            scheduled_fargate_task_image_options=ecs_patterns.ScheduledFargateTaskImageOptions(
-                image=ecs.ContainerImage.from_registry(
-                    "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/" + constants.CDK_APP_NAME + ":" + my_secret_from_git.to_string()),
-                memory_limit_mib=512,
-                command=[
-                    'sh', '-c',
-                    'apt-get update && apt-get install iputils-ping && ping -c 3 google.com',
-                ],
+            scheduled_fargate_task_definition_options=ecs_patterns.ScheduledFargateTaskDefinitionOptions(
+                task_definition=self.fargate_task_definition
             ),
+            # scheduled_fargate_task_image_options=ecs_patterns.ScheduledFargateTaskImageOptions(
+            #     image=ecs.ContainerImage.from_registry(
+            #         "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/" + constants.CDK_APP_NAME + ":" + my_secret_from_git.to_string()),
+            #     memory_limit_mib=512,
+            #     command=[
+            #         'sh', '-c',
+            #         'apt-get update && apt-get install iputils-ping && ping -c 3 google.com',
+            #     ],
+            # ),
             subnet_selection=vpc_subnets,
             schedule=appscaling.Schedule.cron(
                 hour="*", minute="*"),
