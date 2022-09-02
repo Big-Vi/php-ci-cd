@@ -75,11 +75,7 @@ class EcsCluster(Construct):
                 "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/" + constants.CDK_APP_NAME + ":" + my_secret_from_git.to_string()),
             port_mappings=[ecs.PortMapping(container_port=80)],
             secrets=secrets,
-            logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs"),
-            command= [
-                'sh', '-c',
-                'ping -c 3 google.com',
-            ],
+            logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs")
         )
 
         self.fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(
@@ -105,6 +101,10 @@ class EcsCluster(Construct):
         #     #         'sh', '-c',
         #     #         'apt-get update && apt-get install iputils-ping && ping -c 3 google.com',
         #     #     ],
+        #     # command=[
+        #     #     'sh', '-c',
+        #     #     'ping -c 3 google.com',
+        #     # ],
         #     # ),
         #     subnet_selection=vpc_subnets,
         #     schedule=appscaling.Schedule.cron(
