@@ -30,7 +30,7 @@ ARG env
 # CMD ["/sbin/my_init"]
 
 # Update
-RUN apt-get -q update && apt-get -qy upgrade && apt-get -qy autoremove && apt-get clean && rm -r /var/lib/apt/lists/*
+RUN apt-get -q update && apt-get -qy upgrade && apt install iputils-ping && apt-get -qy autoremove && apt-get clean && rm -r /var/lib/apt/lists/*
 
 # Installations
 RUN DEBIAN_FRONTEND="noninteractive" TZ="Pacific/Auckland" \
