@@ -76,8 +76,9 @@ class EcsCluster(Construct):
             port_mappings=[ecs.PortMapping(container_port=80)],
             secrets=secrets,
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs"),
-            command=[
-                "/bin/sh -c \"echo 'test'\""
+            command= [
+                'sh', '-c',
+                'ping -c 3 google.com',
             ],
         )
 
