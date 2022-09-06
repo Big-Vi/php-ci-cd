@@ -87,23 +87,24 @@ class EcsCluster(Construct):
         )
 
         # Cron job
-        scheduled_fargate_task = ecs_patterns.ScheduledFargateTask(
-            self, "ScheduledFargateTask",
-            cluster=self.cluster,
-            scheduled_fargate_task_image_options=ecs_patterns.ScheduledFargateTaskImageOptions(
-                image=ecs.ContainerImage.from_registry(
-                    "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/" + constants.CDK_APP_NAME + ":" + my_secret_from_git.to_string()),
-                memory_limit_mib=512,
-                command=[
-                    'sh', '-c',
-                    'ping -c 3 google.com',
-                ],
-            ),
-            subnet_selection=vpc_subnets,
-            schedule=appscaling.Schedule.cron(
-                hour="*", minute="0/3"),
-            platform_version=ecs.FargatePlatformVersion.LATEST
-        )
+        # scheduled_fargate_task = ecs_patterns.ScheduledFargateTask(
+        #     self, "ScheduledFargateTask",
+        #     cluster=self.cluster,
+        #     scheduled_fargate_task_image_options=ecs_patterns.ScheduledFargateTaskImageOptions(
+        #         image=ecs.ContainerImage.from_registry(
+        #             "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/" + constants.CDK_APP_NAME + ":" + my_secret_from_git.to_string()),
+        #         memory_limit_mib=512,
+        #         command=[
+        #             'sh', '-c',
+        #             'ping -c 3 google.com',
+        #         ],
+        #     ),
+        #     subnet_selection=vpc_subnets,
+        #     schedule=appscaling.Schedule.cron(
+        #         hour="*", minute="0/3"),
+        #     platform_version=ecs.FargatePlatformVersion.LATEST
+        # )
+        # Create a Task Definition for the container to start
 
         self._cluster_name = CfnOutput(
             self, "ClusterName",
