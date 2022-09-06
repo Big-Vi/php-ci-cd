@@ -93,7 +93,7 @@ class EcsCluster(Construct):
             secrets=secrets,
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs_cron"),
             command=["sh", "-c",
-                     "sudo service cron start | sudo service rsyslog restart && sudo /usr/sbin/apache2ctl -D FOREGROUND"]
+                     "service cron start | service rsyslog restart && /usr/sbin/apache2ctl -D FOREGROUND"]
         )
 
         self.fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(
