@@ -92,7 +92,7 @@ class EcsCluster(Construct):
             port_mappings=[ecs.PortMapping(container_port=80)],
             secrets=secrets,
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs_cron"),
-            command=["/usr/sbin/cron -f | service rsyslog restart"]
+            command=["sudo service cron start | sudo service rsyslog restart"]
         )
 
         self.fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(
