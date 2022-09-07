@@ -1,5 +1,5 @@
 #!/bin/bash
 
-crontab cron.txt
+crontab /var/www/html/cron.txt
 
 cron -f
