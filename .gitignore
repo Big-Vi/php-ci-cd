@@ -8,3 +8,4 @@
 /public/assets/
 /silverstripe-cache/
 /silverstripe.log
+/Dockerfile.*
