@@ -271,7 +271,7 @@ class Pipeline(Stack):
             # self_mutation=False,
             synth=synth_codebuild_step,
             # docker_enabled_for_self_mutation=True,
-            # docker_enabled_for_synth=True,
+            docker_enabled_for_synth=True,
         )
 
         self._add_dev_stage(codepipeline)
