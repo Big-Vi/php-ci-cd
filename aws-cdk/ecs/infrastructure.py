@@ -100,7 +100,8 @@ class EcsCluster(Construct):
             service_name=constants.CDK_APP_NAME,
             cluster=self.cluster, task_definition=self.fargate_task_definition,
             task_subnets=vpc_subnets, assign_public_ip=True,
-            security_groups=[security_group]
+            security_groups=[security_group],
+            enable_execute_command=True
         )
         self.fargate_cron_service = ecs.FargateService(
             self, "CronService",

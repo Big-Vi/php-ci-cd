@@ -1,1 +1,1 @@
-* * * * * sudo -u www-data bash -c 'ping -c 3 google.com' >> /var/log/my-log.log
+5 * * * * sudo -u www-data bash -c 'ping -c 3 google.com' >> /var/log/my-log.log
