@@ -75,16 +75,7 @@ class EcsCluster(Construct):
         my_secret_from_git = SecretValue.secrets_manager(
             constants.CDK_APP_NAME + "/git-hash", json_field="commit-hash")
 
-        container = self.fargate_task_definition.add_container(
-            constants.CDK_APP_NAME,
-            # Use an image from ECR
-            image=ecs.ContainerImage.from_registry(
-                "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/" + constants.CDK_APP_NAME + ":" + my_secret_from_git.to_string()),
-            port_mappings=[ecs.PortMapping(container_port=80)],
-            secrets=secrets,
-            logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs")
-        )
-        container = self.fargate_cron_task_definition.add_container(
+        self.fargate_cron_task_definition.add_container(
             constants.CDK_APP_NAME,
             # Use an image from ECR
             image=ecs.ContainerImage.from_registry(
@@ -94,15 +85,6 @@ class EcsCluster(Construct):
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs_cron"),
             command=["bash", "-c", "/var/www/html/cron-start.sh"]
         )
-
-        self.fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(
-            self, "CDKFargateService",
-            service_name=constants.CDK_APP_NAME,
-            cluster=self.cluster, task_definition=self.fargate_task_definition,
-            task_subnets=vpc_subnets, assign_public_ip=True,
-            security_groups=[security_group]
-        )
-
         self.fargate_cron_service = ecs.FargateService(
             self, "CronService",
             service_name=constants.CDK_APP_NAME + "_cron",
@@ -114,25 +96,23 @@ class EcsCluster(Construct):
             security_groups=[security_group]
         )
 
-        # Cron job
-        # scheduled_fargate_task = ecs_patterns.ScheduledFargateTask(
-        #     self, "ScheduledFargateTask",
-        #     cluster=self.cluster,
-        #     scheduled_fargate_task_image_options=ecs_patterns.ScheduledFargateTaskImageOptions(
-        #         image=ecs.ContainerImage.from_registry(
-        #             "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/" + constants.CDK_APP_NAME + ":" + my_secret_from_git.to_string()),
-        #         memory_limit_mib=512,
-        #         command=[
-        #             'sh', '-c',
-        #             'ping -c 3 google.com',
-        #         ],
-        #     ),
-        #     subnet_selection=vpc_subnets,
-        #     schedule=appscaling.Schedule.cron(
-        #         hour="*", minute="0/3"),
-        #     platform_version=ecs.FargatePlatformVersion.LATEST
-        # )
-        # Create a Task Definition for the container to start
+        self.fargate_task_definition.add_container(
+            constants.CDK_APP_NAME,
+            # Use an image from ECR
+            image=ecs.ContainerImage.from_registry(
+                "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/" + constants.CDK_APP_NAME + ":" + my_secret_from_git.to_string()),
+            port_mappings=[ecs.PortMapping(container_port=80)],
+            secrets=secrets,
+            logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs")
+        )
+
+        self.fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(
+            self, "CDKFargateService",
+            service_name=constants.CDK_APP_NAME,
+            cluster=self.cluster, task_definition=self.fargate_task_definition,
+            task_subnets=vpc_subnets, assign_public_ip=True,
+            security_groups=[security_group]
+        )
 
         self._cluster_name = CfnOutput(
             self, "ClusterName",

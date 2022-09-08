@@ -1,1 +1,2 @@
-5 * * * * sudo -u www-data bash -c 'ping -c 3 google.com' >> /var/log/my-log.log
+* * * * * bash -c 'ping -c 3 google.com' >> /var/log/cron-log.log 2>&1
+
