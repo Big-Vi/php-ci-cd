@@ -6,7 +6,7 @@ from aws_cdk import (
     aws_iam as iam,
     aws_ecs_patterns as ecs_patterns,
     aws_secretsmanager as secretsmanager,
-    aws_applicationautoscaling as appscaling,
+    aws_ecr_assets as ecr_assets,
     SecretValue,
     Stack, CfnOutput, Fn
 )
@@ -49,18 +49,23 @@ class EcsCluster(Construct):
         ecsTaskExecutionRole.add_managed_policy(iam.ManagedPolicy.from_aws_managed_policy_name(
             "service-role/AmazonECSTaskExecutionRolePolicy"))
 
+        ecrAsset = ecr_assets.DockerImageAsset(
+            self, "buildImage",
+            directory=(".././"),
+        )
+
         self.fargate_task_definition = ecs.FargateTaskDefinition(
             self, "TaskDef",
             cpu=256,
             execution_role=ecsTaskExecutionRole,
             task_role=ecsTaskExecutionRole,
         )
-        self.fargate_cron_task_definition = ecs.FargateTaskDefinition(
-            self, "CronTaskDef",
-            cpu=256,
-            execution_role=ecsTaskExecutionRole,
-            task_role=ecsTaskExecutionRole,
-        )
+        # self.fargate_cron_task_definition = ecs.FargateTaskDefinition(
+        #     self, "CronTaskDef",
+        #     cpu=256,
+        #     execution_role=ecsTaskExecutionRole,
+        #     task_role=ecsTaskExecutionRole,
+        # )
 
         my_secret_from_name = secretsmanager.Secret.from_secret_name_v2(
             self, "SecretFromName", database_secret_name)
@@ -75,32 +80,29 @@ class EcsCluster(Construct):
         my_secret_from_git = SecretValue.secrets_manager(
             constants.CDK_APP_NAME + "/git-hash", json_field="commit-hash")
 
-        self.fargate_cron_task_definition.add_container(
-            constants.CDK_APP_NAME,
-            # Use an image from ECR
-            image=ecs.ContainerImage.from_registry(
-                "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/" + constants.CDK_APP_NAME + ":" + my_secret_from_git.to_string()),
-            port_mappings=[ecs.PortMapping(container_port=80)],
-            secrets=secrets,
-            logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs_cron"),
-            command=["bash", "-c", "/var/www/html/cron-start.sh"]
-        )
-        self.fargate_cron_service = ecs.FargateService(
-            self, "CronService",
-            service_name=constants.CDK_APP_NAME + "_cron",
-            cluster=self.cluster,
-            task_definition=self.fargate_cron_task_definition,
-            assign_public_ip=True, vpc_subnets=vpc_subnets,
-            desired_count=1,
-            enable_execute_command=True,
-            security_groups=[security_group]
-        )
+        # self.fargate_cron_task_definition.add_container(
+        #     constants.CDK_APP_NAME,
+        #     # Use an image from ECR
+        #     image=ecs.ContainerImage.from_docker_image_asset(ecrAsset),
+        #     port_mappings=[ecs.PortMapping(container_port=80)],
+        #     secrets=secrets,
+        #     logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs_cron"),
+        #     command=["bash", "-c", "/var/www/html/cron-start.sh"]
+        # )
+        # self.fargate_cron_service = ecs.FargateService(
+        #     self, "CronService",
+        #     service_name=constants.CDK_APP_NAME + "_cron",
+        #     cluster=self.cluster,
+        #     task_definition=self.fargate_cron_task_definition,
+        #     assign_public_ip=True, vpc_subnets=vpc_subnets,
+        #     desired_count=1,
+        #     enable_execute_command=True,
+        #     security_groups=[security_group]
+        # )
 
         self.fargate_task_definition.add_container(
             constants.CDK_APP_NAME,
-            # Use an image from ECR
-            image=ecs.ContainerImage.from_registry(
-                "090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/" + constants.CDK_APP_NAME + ":" + my_secret_from_git.to_string()),
+            image=ecs.ContainerImage.from_docker_image_asset(ecrAsset),
             port_mappings=[ecs.PortMapping(container_port=80)],
             secrets=secrets,
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs")
@@ -118,16 +120,3 @@ class EcsCluster(Construct):
             self, "ClusterName",
             value=self.cluster.cluster_name, export_name="ClusterName"
         )
-        # self._service_name = CfnOutput(
-        #     self, "FargateServiceName",
-        #     value=self.fargate_service.service_name, export_name="FargateServiceName"
-        # )
-        # self._fargate_task_definition = CfnOutput(
-        #     self, "FargateTaskDefinitionName",
-        #     value=self.fargate_task_definition, export_name="FargateTaskDefinitionName"
-        # )
-        # CfnOutput(
-        #     self,
-        #     "CDKFargateLoadBalancerDNS",
-        #     value=fargate_service.load_balancer.load_balancer_dns_name,
-        # )
