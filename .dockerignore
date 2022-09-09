@@ -1,2 +1,2 @@
 **/node_modules
-/aws-cdk
+/aws-cdk/cdk.out
