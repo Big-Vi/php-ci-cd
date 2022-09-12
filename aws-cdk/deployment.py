@@ -8,6 +8,7 @@ from constructs import Construct
 
 from database.infrastructure import Database
 from ecs.infrastructure import EcsCluster
+from elasticache.infrastructure import Elasticache
 
 
 class ECSApplication(Stage):
@@ -26,11 +27,15 @@ class ECSApplication(Stage):
         database = Database(
             stateful, "Database", infra=infra, deploy_env=deploy_env
         )
+        elasticache = Elasticache(
+            stateful, "Elasticache", infra=infra, deploy_env=deploy_env
+        )
 
         stateless = Stack(self, "Stateless")
         ecs = EcsCluster(
             stateless,
             "ECS",
             database_secret_name=database._secret_name,
+            elasticache_endpoint=elasticache._elasticache_endpoint,
             infra=infra
         )

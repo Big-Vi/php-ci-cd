@@ -15,7 +15,7 @@ import constants
 
 class EcsCluster(Construct):
 
-    def __init__(self, scope: Construct, id: str, database_secret_name: str, infra: Dict[str, str], ** kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, database_secret_name: str, elasticache_endpoint: str, infra: Dict[str, str], ** kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         vpc = ec2.Vpc.from_lookup(
@@ -81,6 +81,9 @@ class EcsCluster(Construct):
             image=ecs.ContainerImage.from_docker_image_asset(ecrAsset),
             port_mappings=[ecs.PortMapping(container_port=80)],
             secrets=secrets,
+            environment={
+                "REDIS_URL": elasticache_endpoint
+            },
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs_cron"),
             command=["bash", "-c", "/var/www/html/cron-start.sh"]
         )
@@ -100,6 +103,9 @@ class EcsCluster(Construct):
             image=ecs.ContainerImage.from_docker_image_asset(ecrAsset),
             port_mappings=[ecs.PortMapping(container_port=80)],
             secrets=secrets,
+            environment={
+                "REDIS_URL": elasticache_endpoint
+            },
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs")
         )
 
