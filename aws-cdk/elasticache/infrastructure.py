@@ -17,23 +17,20 @@ class Elasticache(Construct):
             vpc_id=infra["VPC_ID"],
         )
 
-        vpc_subnets = ec2.SubnetSelection(
-            subnets=[
-                ec2.Subnet.from_subnet_id(
-                    self, "subnet1", infra["SUBNET_IDS"]["SUBNET_ID_1"]),
-                ec2.Subnet.from_subnet_id(
-                    self, "subnet2", infra["SUBNET_IDS"]["SUBNET_ID_2"])
-            ]
+        redis_subnet_group = elasticache.CfnSubnetGroup(
+            scope=self,
+            id="redis_subnet_group",
+            subnet_ids=[infra["SUBNET_IDS"]["SUBNET_ID_1"],
+                        infra["SUBNET_IDS"]["SUBNET_ID_2"]],
+            description="subnet group for redis"
         )
-
-        security_group = ec2.SecurityGroup.from_lookup_by_id(
-            self, "SG", infra["SG_ID"])
 
         elasticache_cluster = elasticache.CfnCacheCluster(
             self, "MyCfnCacheCluster",
             cache_node_type="cache.t3.micro",
             engine="redis",
             num_cache_nodes=1,
+            cache_subnet_group_name=redis_subnet_group.ref,
             vpc_security_group_ids=[infra["SG_ID"]]
         )
 
