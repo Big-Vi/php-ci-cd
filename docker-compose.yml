@@ -10,6 +10,7 @@ services:
             - .:/var/www/html
         depends_on:
             - database
+            - redis
         environment:
             - DOCUMENT_ROOT=/var/www/html/public
             - SS_TRUSTED_PROXY_IPS=*
@@ -31,5 +32,21 @@ services:
             - db-data:/var/lib/mysql
         ports:
             - '33060:3306'
+
+    redis:
+        image: "redis:alpine"
+        container_name: php_ci_cd_redis
+        volumes:
+            - redis-data:/data
+            - redis-conf:/usr/local/etc/redis/redis.conf
+        # environment:
+        #     - ALLOW_EMPTY_PASSWORD=yes
+        ports:
+            - 6379:6379
+        # command: redis-server --requirepass MDNcVb924a --loglevel warning
+        command: redis-server
+
 volumes:
     db-data:
+    redis-data:
+    redis-conf:

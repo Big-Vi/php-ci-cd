@@ -6,7 +6,8 @@
         "php": "^7.4 || ^8.0",
         "silverstripe/recipe-plugin": "^1.2",
         "silverstripe/recipe-cms": "~4.11.0@stable",
-        "silverstripe/login-forms": "~4.7.0@stable"
+        "silverstripe/login-forms": "~4.7.0@stable",
+        "pstaender/silverstripe-redis-cache": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5"
