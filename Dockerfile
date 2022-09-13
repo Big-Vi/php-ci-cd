@@ -56,13 +56,14 @@ RUN chmod +x /etc/service/apache2/run
 COPY --from=frontend /var/www/html /var/www/html
 COPY --from=vendor /app/vendor/ /var/www/html/vendor/
 
-RUN chmod 0755 /var/www/html/cron-start.sh
-RUN chmod 0755 /var/www/html/php-ini.sh
+RUN chmod 0755 /var/www/html/init.sh
 
 ENV DOCUMENT_ROOT /var/www/html/public
 # RUN REDIS_URL=$(grep 'REDIS_URL' /var/www/html/.env | cut -d'=' -f2); [ "$REDIS_URL" ] && ESCAPED_REDIS_URL=$(printf '%s\n' "$REDIS_URL" | sed -e 's/[\/&]/\\&/g') &&\
 #     sed -i "s/session\.save_handler.*/session.save_handler = redis/; s/\;session\.save_path.*/session.save_path = $ESCAPED_REDIS_URL/" /etc/php/7.4/apache2/php.ini || echo REDIS not configured
-CMD ["bash","-c","/usr/sbin/apache2ctl -D FOREGROUND"]
+# CMD ["bash","-c","/usr/sbin/apache2ctl -D FOREGROUND"]
+ENTRYPOINT ["/var/www/html/init.sh"]
+# CMD ["clusterName.xxxxxx.cfg.usw2.cache.amazonaws.com:port", "False"]
 
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
