@@ -6,7 +6,9 @@ REDIS_URL=$1
 
 sed -i.bak "s/session\.save_handler.*/session.save_handler = redis/; s/\;session\.save_path.*/session.save_path = $ESCAPED_REDIS_URL/" /etc/php/7.4/apache2/php.ini
 
-if [$2 -eq "True"]; then
+if [ $2 -eq 1 ]; 
+
+then
 
 crontab /var/www/html/cron.txt
 
