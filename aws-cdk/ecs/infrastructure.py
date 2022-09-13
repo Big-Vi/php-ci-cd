@@ -85,7 +85,7 @@ class EcsCluster(Construct):
                 "REDIS_URL": elasticache_endpoint
             },
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs_cron"),
-            command=[elasticache_endpoint, 1]
+            command=[elasticache_endpoint, "True"]
         )
         self.fargate_cron_service = ecs.FargateService(
             self, "CronService",
@@ -107,7 +107,7 @@ class EcsCluster(Construct):
                 "REDIS_URL": elasticache_endpoint
             },
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs"),
-            command=[elasticache_endpoint, 0]
+            command=[elasticache_endpoint, "False"]
         )
 
         self.fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(
