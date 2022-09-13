@@ -85,7 +85,8 @@ class EcsCluster(Construct):
                 "REDIS_URL": elasticache_endpoint
             },
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs_cron"),
-            command=["bash", "-c", "/var/www/html/cron-start.sh"]
+            command=["bash", "-c", "/var/www/html/cron-start.sh " +
+                     elasticache_endpoint]
         )
         self.fargate_cron_service = ecs.FargateService(
             self, "CronService",
@@ -106,7 +107,9 @@ class EcsCluster(Construct):
             environment={
                 "REDIS_URL": elasticache_endpoint
             },
-            logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs")
+            logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs"),
+            command=["bash", "-c", "/var/www/html/php-ini.sh " +
+                     elasticache_endpoint]
         )
 
         self.fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(

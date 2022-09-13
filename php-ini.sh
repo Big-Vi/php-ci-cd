@@ -1,11 +1,5 @@
 #!/bin/bash
 
-crontab /var/www/html/cron.txt
-
-/var/www/html/vendor/silverstripe/framework/sake dev/build
-
-cron -f
-
 REDIS_URL=$1
 
 [ "$REDIS_URL" ] && ESCAPED_REDIS_URL=$(printf '%s\n' "$REDIS_URL" | sed -e 's/[\/&]/\\&/g')
