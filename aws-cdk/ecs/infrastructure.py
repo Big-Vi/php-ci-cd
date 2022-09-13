@@ -82,7 +82,7 @@ class EcsCluster(Construct):
             port_mappings=[ecs.PortMapping(container_port=80)],
             secrets=secrets,
             environment={
-                "REDIS_URL": elasticache_endpoint
+                "REDIS_URL": elasticache_endpoint + ":6379"
             },
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs_cron"),
             command=[elasticache_endpoint, "True"]
@@ -104,7 +104,7 @@ class EcsCluster(Construct):
             port_mappings=[ecs.PortMapping(container_port=80)],
             secrets=secrets,
             environment={
-                "REDIS_URL": elasticache_endpoint
+                "REDIS_URL": elasticache_endpoint + ":6379"
             },
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs"),
             command=[elasticache_endpoint, "False"]
