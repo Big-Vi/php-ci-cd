@@ -127,8 +127,7 @@ class Pipeline(Stack):
             self,
             f"{constants.CDK_APP_NAME}-Dev",
             env=constants.AWS_DEV_ENV,
-            infra=constants.INFRA,
-            deploy_env="test"
+            infra=constants.INFRA_DEV
         )
 
         codepipeline.add_stage(prod_stage)

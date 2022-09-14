@@ -17,7 +17,6 @@ class ECSApplication(Stage):
         scope: Construct,
         id_: str,
         *,
-        deploy_env: str,
         infra: Dict[str, str],
         **kwargs: Any,
     ):
@@ -25,17 +24,17 @@ class ECSApplication(Stage):
 
         stateful = Stack(self, "Stateful")
         database = Database(
-            stateful, "Database", infra=infra, deploy_env=deploy_env
+            stateful, "Database", infra=infra
         )
         elasticache = Elasticache(
-            stateful, "Elasticache", infra=infra, deploy_env=deploy_env
+            stateful, "Elasticache", infra=infra
         )
 
         stateless = Stack(self, "Stateless")
         ecs = EcsCluster(
             stateless,
             "ECS",
-            database_secret_name=database._secret_name,
+            db_instance_endpoint_address=database.db_instance_endpoint_address,
             elasticache_endpoint=elasticache._elasticache_endpoint,
             infra=infra
         )

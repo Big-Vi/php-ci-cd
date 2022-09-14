@@ -15,25 +15,25 @@ import constants
 
 class EcsCluster(Construct):
 
-    def __init__(self, scope: Construct, id: str, database_secret_name: str, elasticache_endpoint: str, infra: Dict[str, str], ** kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, db_instance_endpoint_address: str, elasticache_endpoint: str, infra: Dict[str, str], ** kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         vpc = ec2.Vpc.from_lookup(
             self, "VPC",
-            vpc_id=infra["VPC_ID"],
+            vpc_id=constants.INFRA_COMMON["VPC_ID"],
         )
 
         vpc_subnets = ec2.SubnetSelection(
             subnets=[
                 ec2.Subnet.from_subnet_id(
-                    self, "subnet1", infra["SUBNET_IDS"]["SUBNET_ID_1"]),
+                    self, "subnet1", constants.INFRA_COMMON["SUBNET_IDS"]["SUBNET_ID_1"]),
                 ec2.Subnet.from_subnet_id(
-                    self, "subnet2", infra["SUBNET_IDS"]["SUBNET_ID_2"])
+                    self, "subnet2", constants.INFRA_COMMON["SUBNET_IDS"]["SUBNET_ID_2"])
             ]
         )
 
         security_group = ec2.SecurityGroup.from_lookup_by_id(
-            self, "SG", infra["SG_ID"])
+            self, "SG", constants.INFRA_COMMON["SG_ID"])
 
         self.cluster = ecs.Cluster(
             self, 'EcsCluster',
@@ -65,14 +65,14 @@ class EcsCluster(Construct):
             task_role=ecsTaskExecutionRole,
         )
 
-        my_secret_from_name = secretsmanager.Secret.from_secret_name_v2(
-            self, "SecretFromName", database_secret_name)
+        secret = secretsmanager.Secret.from_secret_name_v2(
+            self, "SecretFromName", infra["SECRET_ENV"])
 
         secrets = {
-            "SS_DATABASE_NAME": ecs.Secret.from_secrets_manager(my_secret_from_name, "dbname"),
-            "SS_DATABASE_PASSWORD": ecs.Secret.from_secrets_manager(my_secret_from_name, "password"),
-            "SS_DATABASE_USERNAME": ecs.Secret.from_secrets_manager(my_secret_from_name, "username"),
-            "SS_DATABASE_SERVER": ecs.Secret.from_secrets_manager(my_secret_from_name, "host"),
+            "SS_DATABASE_PASSWORD": ecs.Secret.from_secrets_manager(secret, "password"),
+            "SS_DATABASE_USERNAME": ecs.Secret.from_secrets_manager(secret, "username"),
+            "SS_DEFAULT_ADMIN_USERNAME": ecs.Secret.from_secrets_manager(secret, "SS_DEFAULT_ADMIN_USERNAME"),
+            "SS_DEFAULT_ADMIN_PASSWORD": ecs.Secret.from_secrets_manager(secret, "SS_DEFAULT_ADMIN_PASSWORD")
         }
 
         self.fargate_cron_task_definition.add_container(
@@ -82,6 +82,8 @@ class EcsCluster(Construct):
             port_mappings=[ecs.PortMapping(container_port=80)],
             secrets=secrets,
             environment={
+                "SS_DATABASE_NAME": infra["DB_NAME"],
+                "SS_DATABASE_SERVER": db_instance_endpoint_address,
                 "REDIS_URL": elasticache_endpoint + ":6379"
             },
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs_cron"),

@@ -3,6 +3,7 @@ from typing import Dict
 from aws_cdk import (
     aws_ec2 as ec2,
     aws_rds as rds,
+    aws_secretsmanager as secretsmanager,
     RemovalPolicy,
 )
 from constructs import Construct
@@ -10,25 +11,28 @@ from constructs import Construct
 
 class Database(Construct):
 
-    def __init__(self, scope: Construct, id: str, infra: Dict[str, str], deploy_env=str, ** kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, infra: Dict[str, str], ** kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         vpc = ec2.Vpc.from_lookup(
             self, "VPC",
-            vpc_id=infra["VPC_ID"],
+            vpc_id=constants.INFRA_COMMON["VPC_ID"],
         )
 
         vpc_subnets = ec2.SubnetSelection(
             subnets=[
                 ec2.Subnet.from_subnet_id(
-                    self, "subnet1", infra["SUBNET_IDS"]["SUBNET_ID_1"]),
+                    self, "subnet1", constants.INFRA_COMMON["SUBNET_IDS"]["SUBNET_ID_1"]),
                 ec2.Subnet.from_subnet_id(
-                    self, "subnet2", infra["SUBNET_IDS"]["SUBNET_ID_2"])
+                    self, "subnet2", constants.INFRA_COMMON["SUBNET_IDS"]["SUBNET_ID_2"])
             ]
         )
 
         security_group = ec2.SecurityGroup.from_lookup_by_id(
-            self, "SG", infra["SG_ID"])
+            self, "SG", constants.INFRA_COMMON["SG_ID"])
+
+        secret = secretsmanager.Secret.from_secret_name_v2(
+            self, "SecretFromName", infra["SECRET_ENV"])
 
         dbInstance = rds.DatabaseInstance(
             self, "RDS",
@@ -40,13 +44,11 @@ class Database(Construct):
             vpc_subnets=vpc_subnets,
             security_groups=[security_group],
             port=3306,
-            instance_type=infra["DEV_DATABASE_INSTANCE_TYPE"] if deploy_env == "dev" else infra["PROD_DATABASE_INSTANCE_TYPE"],
-            credentials=rds.Credentials.from_generated_secret(
-                "admin", secret_name=deploy_env+ "/" + constants.CDK_APP_NAME
-            ),
+            instance_type=infra["DATABASE_INSTANCE_TYPE"],
+            credentials=rds.Credentials.from_secret(secret),
             publicly_accessible=True,
             removal_policy=RemovalPolicy.DESTROY,
             deletion_protection=False
         )
 
-        self._secret_name = dbInstance.secret.secret_name
+        self.db_instance_endpoint_address = dbInstance.db_instance_endpoint_address
