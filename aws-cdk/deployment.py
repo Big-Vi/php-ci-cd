@@ -34,7 +34,6 @@ class ECSApplication(Stage):
         ecs = EcsCluster(
             stateless,
             "ECS",
-            db_instance_endpoint_address=database.db_instance_endpoint_address,
             elasticache_endpoint=elasticache._elasticache_endpoint,
             infra=infra
         )

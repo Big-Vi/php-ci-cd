@@ -9,7 +9,7 @@ from constructs import Construct
 
 class Elasticache(Construct):
 
-    def __init__(self, scope: Construct, id: str, infra: Dict[str, str], deploy_env=str, ** kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, infra: Dict[str, str], ** kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         redis_subnet_group = elasticache.CfnSubnetGroup(

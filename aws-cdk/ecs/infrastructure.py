@@ -15,7 +15,7 @@ import constants
 
 class EcsCluster(Construct):
 
-    def __init__(self, scope: Construct, id: str, db_instance_endpoint_address: str, elasticache_endpoint: str, infra: Dict[str, str], ** kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, elasticache_endpoint: str, infra: Dict[str, str], ** kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         vpc = ec2.Vpc.from_lookup(

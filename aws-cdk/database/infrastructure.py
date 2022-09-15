@@ -50,5 +50,3 @@ class Database(Construct):
             removal_policy=RemovalPolicy.DESTROY,
             deletion_protection=False
         )
-
-        self.db_instance_endpoint_address = dbInstance.db_instance_endpoint_address
