@@ -71,8 +71,10 @@ class EcsCluster(Construct):
         secrets = {
             "SS_DATABASE_PASSWORD": ecs.Secret.from_secrets_manager(secret, "password"),
             "SS_DATABASE_USERNAME": ecs.Secret.from_secrets_manager(secret, "username"),
+            "SS_DATABASE_NAME": ecs.Secret.from_secrets_manager(secret, "dbname"),
+            "SS_DATABASE_SERVER": ecs.Secret.from_secrets_manager(secret, "host"),
             "SS_DEFAULT_ADMIN_USERNAME": ecs.Secret.from_secrets_manager(secret, "SS_DEFAULT_ADMIN_USERNAME"),
-            "SS_DEFAULT_ADMIN_PASSWORD": ecs.Secret.from_secrets_manager(secret, "SS_DEFAULT_ADMIN_PASSWORD")
+            "SS_DEFAULT_ADMIN_PASSWORD": ecs.Secret.from_secrets_manager(secret, "SS_DEFAULT_ADMIN_PASSWORD"),
         }
 
         self.fargate_cron_task_definition.add_container(
@@ -82,8 +84,6 @@ class EcsCluster(Construct):
             port_mappings=[ecs.PortMapping(container_port=80)],
             secrets=secrets,
             environment={
-                "SS_DATABASE_NAME": infra["DB_NAME"],
-                "SS_DATABASE_SERVER": db_instance_endpoint_address,
                 "REDIS_URL": elasticache_endpoint + ":6379"
             },
             logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs_cron"),
