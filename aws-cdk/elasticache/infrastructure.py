@@ -22,7 +22,7 @@ class Elasticache(Construct):
 
         elasticache_cluster = elasticache.CfnCacheCluster(
             self, "MyCfnCacheCluster",
-            cache_node_type="cache.t3.micro",
+            cache_node_type=infra["ELASTICACHE_NODE_TYPE"],
             engine="redis",
             num_cache_nodes=1,
             cache_subnet_group_name=redis_subnet_group.ref,

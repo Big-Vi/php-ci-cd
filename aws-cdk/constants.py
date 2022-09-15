@@ -52,18 +52,18 @@ INFRA_COMMON = {
 INFRA_DEV = {
     "DB_NAME": "php_ci_cd_dev",
     "SECRET_ENV": "dev/php_ci_cd",
-    "DATABASE_INSTANCE_TYPE": DEV_DATABASE_INSTANCE_TYPE
+    "DATABASE_INSTANCE_TYPE": DEV_DATABASE_INSTANCE_TYPE,
+    "ELASTICACHE_NODE_TYPE": "cache.t3.micro"
 }
 INFRA_PROD = {
     "DB_NAME": "php_ci_cd_prod",
     "SECRET_ENV": "prod/php_ci_cd",
-    "DATABASE_INSTANCE_TYPE": PROD_DATABASE_INSTANCE_TYPE
+    "DATABASE_INSTANCE_TYPE": PROD_DATABASE_INSTANCE_TYPE,
+    "ELASTICACHE_NODE_TYPE": "cache.t3.micro"
 }
 
 AWS_PIPELINE_ENV = Environment(account="090426658505", region="ap-southeast-2")
 
-AWS_DEV_ENV = Environment(
-    account=os.environ["CDK_DEFAULT_ACCOUNT"], region=os.environ["CDK_DEFAULT_REGION"]
-)
+AWS_DEV_ENV = Environment(account=os.environ["CDK_DEFAULT_ACCOUNT"], region=os.environ["CDK_DEFAULT_REGION"])
 
 AWS_PROD_ENV = Environment(account="090426658505", region="ap-southeast-2")

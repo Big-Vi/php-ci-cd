@@ -123,11 +123,24 @@ class Pipeline(Stack):
         self._add_dev_stage(codepipeline)
 
     def _add_dev_stage(self, codepipeline: pipelines.CodePipeline) -> None:
-        prod_stage = ECSApplication(
+        dev_stage = ECSApplication(
             self,
             f"{constants.CDK_APP_NAME}-Dev",
-            env=constants.AWS_DEV_ENV,
+            env=constants.AWS_PROD_ENV,
             infra=constants.INFRA_DEV
         )
 
-        codepipeline.add_stage(prod_stage)
+        codepipeline.add_stage(dev_stage)
+
+        # prod_stage = ECSApplication(
+        #     self,
+        #     f"{constants.CDK_APP_NAME}-Prod",
+        #     env=constants.AWS_PROD_ENV,
+        #     infra=constants.INFRA_PROD
+        # )
+
+        # codepipeline.add_stage(prod_stage,
+        #     pre=[
+        #         pipelines.ManualApprovalStep("PromoteToProd")
+        #     ]
+        # )
