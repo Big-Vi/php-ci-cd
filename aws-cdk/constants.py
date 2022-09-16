@@ -53,7 +53,9 @@ INFRA_DEV = {
     "DB_NAME": "php_ci_cd_dev",
     "SECRET_ENV": "dev/php_ci_cd",
     "DATABASE_INSTANCE_TYPE": DEV_DATABASE_INSTANCE_TYPE,
-    "ELASTICACHE_NODE_TYPE": "cache.t3.micro"
+    "ELASTICACHE_NODE_TYPE": "cache.t3.micro",
+    "DOMAIN_NAME": "resumeonthefly.com",
+    "CERTIFICATE_ARN": "arn:aws:acm:ap-southeast-2:090426658505:certificate/e3e7a1ea-f7f0-463f-b46d-6af0a39eb7c1"
 }
 INFRA_PROD = {
     "DB_NAME": "php_ci_cd_prod",

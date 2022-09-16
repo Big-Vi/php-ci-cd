@@ -27,5 +27,9 @@
         ]
       }
     ]
+  },
+  "hosted-zone:account=090426658505:domainName=resumeonthefly.com:region=ap-southeast-2": {
+    "Id": "/hostedzone/Z049237922OLRMN2LPEEC",
+    "Name": "resumeonthefly.com."
   }
 }

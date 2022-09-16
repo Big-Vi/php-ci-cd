@@ -6,6 +6,9 @@ from aws_cdk import (
     aws_ecs_patterns as ecs_patterns,
     aws_secretsmanager as secretsmanager,
     aws_ecr_assets as ecr_assets,
+    aws_certificatemanager as certificatemanager,
+    aws_route53 as route53,
+    aws_elasticloadbalancingv2 as elasticloadbalancing,
     CfnOutput
 )
 from constructs import Construct
@@ -112,10 +115,20 @@ class EcsCluster(Construct):
             command=[elasticache_endpoint, "False"]
         )
 
+        domain_zone = route53.HostedZone.from_lookup(
+            self, "Zone", domain_name=constants.INFRA_DEV["DOMAIN_NAME"])
+        certificate = certificatemanager.Certificate.from_certificate_arn(
+            self, "Cert", constants.INFRA_DEV["CERTIFICATE_ARN"])
+
         self.fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(
             self, "CDKFargateService",
             service_name=constants.CDK_APP_NAME,
             cluster=self.cluster, task_definition=self.fargate_task_definition,
+            certificate=certificate,
+            ssl_policy=elasticloadbalancing.SslPolicy.RECOMMENDED,
+            domain_name=constants.INFRA_DEV["DOMAIN_NAME"],
+            domain_zone=domain_zone,
+            redirect_http=True,
             task_subnets=vpc_subnets, assign_public_ip=True,
             security_groups=[security_group]
         )
