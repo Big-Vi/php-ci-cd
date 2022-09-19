@@ -81,7 +81,7 @@ class Pipeline(Stack):
                 "pip install -r requirements.txt",
                 "cdk synth",
             ],
-            primary_output_directory="aws-cdk/cdk.out",
+            primary_output_directory="infra/cdk.out",
             role_policy_statements=[
                 iam.PolicyStatement(
                     effect=iam.Effect.ALLOW,

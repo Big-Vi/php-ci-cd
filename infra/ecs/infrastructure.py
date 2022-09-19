@@ -116,9 +116,9 @@ class EcsCluster(Construct):
         )
 
         domain_zone = route53.HostedZone.from_lookup(
-            self, "Zone", domain_name=constants.INFRA_DEV["DOMAIN_NAME"])
+            self, "Zone", domain_name=constants.INFRA_PROD["DOMAIN_NAME"])
         certificate = certificatemanager.Certificate.from_certificate_arn(
-            self, "Cert", constants.INFRA_DEV["CERTIFICATE_ARN"])
+            self, "Cert", constants.INFRA_PROD["CERTIFICATE_ARN"])
 
         self.fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(
             self, "CDKFargateService",
