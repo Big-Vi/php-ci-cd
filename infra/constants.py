@@ -55,7 +55,7 @@ INFRA_DEV = {
     "DATABASE_INSTANCE_TYPE": DEV_DATABASE_INSTANCE_TYPE,
     "ELASTICACHE_NODE_TYPE": "cache.t3.micro",
     "DOMAIN_NAME": "test.resumeonthefly.com",
-    "CERTIFICATE_ARN": "arn:aws:acm:ap-southeast-2:090426658505:certificate/e3e7a1ea-f7f0-463f-b46d-6af0a39eb7c1"
+    "CERTIFICATE_ARN": "arn:aws:acm:ap-southeast-2:090426658505:certificate/68449ec6-263b-415d-aaad-3035434d83f3"
 }
 INFRA_PROD = {
     "DB_NAME": "php_ci_cd_prod",
@@ -63,7 +63,7 @@ INFRA_PROD = {
     "DATABASE_INSTANCE_TYPE": PROD_DATABASE_INSTANCE_TYPE,
     "ELASTICACHE_NODE_TYPE": "cache.t3.micro",
     "DOMAIN_NAME": "resumeonthefly.com",
-    "CERTIFICATE_ARN": "arn:aws:acm:ap-southeast-2:090426658505:certificate/e3e7a1ea-f7f0-463f-b46d-6af0a39eb7c1"
+    "CERTIFICATE_ARN": "arn:aws:acm:ap-southeast-2:090426658505:certificate/68449ec6-263b-415d-aaad-3035434d83f3"
 }
 
 AWS_PIPELINE_ENV = Environment(account="090426658505", region="ap-southeast-2")
