@@ -133,7 +133,7 @@ class EcsCluster(Construct):
             security_groups=[security_group]
         )
 
-        self._cluster_name = CfnOutput(
-            self, "ClusterName",
-            value=self.cluster.cluster_name, export_name="ClusterName"
-        )
+        # self._cluster_name = CfnOutput(
+        #     self, "ClusterName",
+        #     value=self.cluster.cluster_name, export_name="ClusterName"
+        # )
