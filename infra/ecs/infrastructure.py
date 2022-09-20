@@ -126,7 +126,7 @@ class EcsCluster(Construct):
             cluster=self.cluster, task_definition=self.fargate_task_definition,
             certificate=certificate,
             ssl_policy=elasticloadbalancing.SslPolicy.RECOMMENDED,
-            domain_name=constants.INFRA_DEV["DOMAIN_NAME"],
+            domain_name=infra["DOMAIN_NAME"],
             domain_zone=domain_zone,
             redirect_http=True,
             task_subnets=vpc_subnets, assign_public_ip=True,
