@@ -29,8 +29,6 @@ GITHUB_OWNER = "Big-Vi"
 GITHUB_REPO = "php-ci-cd"
 GITHUB_TRUNK_BRANCH = "main"
 
-ENV = "test"
-
 DEV_DATABASE_INSTANCE_TYPE = ec2.InstanceType.of(
     ec2.InstanceClass.BURSTABLE3,
     ec2.InstanceSize.MICRO
@@ -41,14 +39,6 @@ PROD_DATABASE_INSTANCE_TYPE = ec2.InstanceType.of(
     ec2.InstanceSize.MICRO
 )
 
-INFRA_COMMON = {
-    "VPC_ID": "vpc-0a2eb88f37dd4d313",
-    "SUBNET_IDS": {
-        "SUBNET_ID_1": "subnet-025da55a2ea069297",
-        "SUBNET_ID_2": "subnet-090a11611b7237db6"
-    },
-    "SG_ID": "sg-0cf6eb022d5597677"
-}
 INFRA_DEV = {
     "DB_NAME": "php_ci_cd_dev",
     "SECRET_ENV": "dev/php_ci_cd",

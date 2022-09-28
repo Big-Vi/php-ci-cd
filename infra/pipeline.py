@@ -27,53 +27,12 @@ class Pipeline(Stack):
             connection_arn=constants.GITHUB_CONNECTION_ARN,
             trigger_on_push=True,
         )
-        synth_python_version = {
-            "phases": {
-                "install": {
-                    "runtime-versions": {"python": constants.CDK_APP_PYTHON_VERSION},
-                    "commands": [
-                        "nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&",
-                        "timeout 15 sh -c \"until docker info; do echo .; sleep 1; done\""
-                    ]
-                },
-                "pre_build": {
-                    "commands": [
-                        "REPO_BASE=090426658505.dkr.ecr.ap-southeast-2.amazonaws.com",
-                        "REPO_NAME=" + constants.CDK_APP_NAME,
-                        "TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)",
-                        "aws secretsmanager update-secret --secret-id " + constants.CDK_APP_NAME + "/git-hash \
-                            --secret-string '{\"commit-hash\": \"'${TAG}'\"}'",
-                        "aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin \"$REPO_BASE\"",
-                    ]
-                },
-                "build": {
-                    "commands": [
-                        "docker build -t \"$REPO_BASE/$REPO_NAME:latest\" --build-arg env=" +
-                        constants.ENV + " .",
-                        "docker tag \"$REPO_BASE/$REPO_NAME:latest\" \"$REPO_BASE/$REPO_NAME:$TAG\""
-                    ]
-                },
-                "post_build": {
-                    "commands": [
-                        "docker push $REPO_BASE/$REPO_NAME:$TAG",
-                        "docker push $REPO_BASE/$REPO_NAME:latest",
-                        "printf [{\"name\":\"$REPO_NAME\"\,\"imageUri\":\"090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/$REPO_NAME:$TAG\"}] > imagedefinitions.json"
-                    ]
-                }
-            },
-            # "artifacts": {
-            #     "files": ["imagedefinitions.json"]
-            # }
-        }
         synth_codebuild_step = pipelines.CodeBuildStep(
             "Synth",
             input=codepipeline_source,
             build_environment=codebuild.BuildEnvironment(
                 privileged=True,
             ),
-            # partial_build_spec=codebuild.BuildSpec.from_object(
-            #     synth_python_version),
-            # install_commands=["./scripts/install-deps.sh"],
             commands=[
                 "cd infra",  # Installs the cdk cli on Codebuild
                 "npm install -g aws-cdk",
@@ -116,13 +75,7 @@ class Pipeline(Stack):
             "CodePipeline",
             # self_mutation=False,
             synth=synth_codebuild_step,
-            # docker_enabled_for_self_mutation=True,
-            # docker_enabled_for_synth=True,
         )
-
-        self._add_dev_stage(codepipeline)
-
-    def _add_dev_stage(self, codepipeline: pipelines.CodePipeline) -> None:
         dev_stage = ECSApplication(
             self,
             f"{constants.CDK_APP_NAME}-Dev",

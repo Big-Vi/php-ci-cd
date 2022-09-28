@@ -6,9 +6,7 @@ from aws_cdk import (
 )
 from constructs import Construct
 
-from database.infrastructure import Database
-from ecs.infrastructure import EcsCluster
-from elasticache.infrastructure import Elasticache
+from coreapp import CoreApp
 
 
 class ECSApplication(Stage):
@@ -22,18 +20,4 @@ class ECSApplication(Stage):
     ):
         super().__init__(scope, id_, **kwargs)
 
-        stateful = Stack(self, "Stateful")
-        database = Database(
-            stateful, "Database", infra=infra
-        )
-        elasticache = Elasticache(
-            stateful, "Elasticache", infra=infra
-        )
-
-        stateless = Stack(self, "Stateless")
-        ecs = EcsCluster(
-            stateless,
-            "ECS",
-            elasticache_endpoint=elasticache._elasticache_endpoint,
-            infra=infra
-        )
+        CoreApp(self, "CoreApp", infra=infra)
