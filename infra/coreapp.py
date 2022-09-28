@@ -96,7 +96,12 @@ class CoreApp(Stack):
             removal_policy=RemovalPolicy.DESTROY,
             deletion_protection=False
         )
-        private_subnets_ids = [ps.subnet_id for ps in vpc.private_subnets]
+        selection = vpc.select_subnets(
+            subnet_type=ec2.SubnetType.PRIVATE_ISOLATED
+        )
+
+        private_subnets_ids = [
+            ps.subnet_id for ps in selection.subnets]
 
         redis_subnet_group = elasticache.CfnSubnetGroup(
             scope=self,
