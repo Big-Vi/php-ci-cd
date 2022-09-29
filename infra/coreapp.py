@@ -33,7 +33,7 @@ class CoreApp(Stack):
             ), ec2.SubnetConfiguration(
                 cidr_mask=28,
                 name="rds",
-                subnet_type=ec2.SubnetType.PRIVATE_ISOLATED
+                subnet_type=ec2.SubnetType.PRIVATE_WITH_NAT
             )]
         )
         fargate_security_group = ec2.SecurityGroup(
@@ -85,9 +85,7 @@ class CoreApp(Stack):
             ),
             vpc=vpc,
             vpc_subnets=ec2.SubnetSelection(
-                one_per_az=False,
-                subnet_group_name="rds"
-            ),
+                subnet_type=ec2.SubnetType.PRIVATE_WITH_NAT),
             port=3306,
             security_groups=[db_security_group],
             instance_type=infra["DATABASE_INSTANCE_TYPE"],
@@ -97,7 +95,7 @@ class CoreApp(Stack):
             deletion_protection=False
         )
         selection = vpc.select_subnets(
-            subnet_type=ec2.SubnetType.PRIVATE_ISOLATED
+            subnet_type=ec2.SubnetType.PRIVATE_WITH_NAT
         )
 
         private_subnets_ids = [
