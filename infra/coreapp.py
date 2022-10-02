@@ -92,7 +92,6 @@ class CoreApp(Stack):
             security_groups=[db_security_group],
             instance_type=infra["DATABASE_INSTANCE_TYPE"],
             credentials=rds.Credentials.from_secret(secret),
-            publicly_accessible=True,
             removal_policy=RemovalPolicy.DESTROY,
             deletion_protection=False
         )
