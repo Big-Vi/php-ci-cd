@@ -212,7 +212,6 @@ class CoreApp(Stack):
             domain_name=infra["DOMAIN_NAME"],
             domain_zone=domain_zone,
             redirect_http=True,
-            enable_execute_command=True,
             task_subnets=vpc_subnets, assign_public_ip=True,
             security_groups=[fargate_security_group]
         )
