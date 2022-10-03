@@ -92,8 +92,10 @@ class Pipeline(Stack):
         #     infra=constants.INFRA_PROD
         # )
 
-        # codepipeline.add_stage(prod_stage,
+        # codepipeline.add_stage(
+        #     prod_stage,
         #     pre=[
-        #         pipelines.ManualApprovalStep("PromoteToProd")
+        #         pipelines.ManualApprovalStep(
+        #             "PromoteToProd")
         #     ]
         # )

@@ -1,18 +1,3 @@
-# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy of
-# this software and associated documentation files (the "Software"), to deal in
-# the Software without restriction, including without limitation the rights to
-# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-# the Software, and to permit persons to whom the Software is furnished to do so.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 import os
 
 from aws_cdk import (
@@ -39,6 +24,18 @@ PROD_DATABASE_INSTANCE_TYPE = ec2.InstanceType.of(
     ec2.InstanceSize.MICRO
 )
 
+INFRA_COMMON = {
+    "VPC_ID": "vpc-0a82b8fc8835b7204",
+    "SUBNET_IDS_PUBLIC": {
+        "SUBNET_ID_1": "subnet-089d7fca3d01e9957",
+        "SUBNET_ID_2": "subnet-0c15978d543719163"
+    },
+    "SUBNET_IDS_PRIVATE": {
+        "SUBNET_ID_1": "subnet-0531095e55e806806",
+        "SUBNET_ID_2": "subnet-066c48fa250246a78"
+    },
+    "SG_ID": "sg-04fa27762c3506675"
+}
 INFRA_DEV = {
     "DB_NAME": "php_ci_cd_dev",
     "SECRET_ENV": "dev/php_ci_cd",
@@ -58,6 +55,7 @@ INFRA_PROD = {
 
 AWS_PIPELINE_ENV = Environment(account="090426658505", region="ap-southeast-2")
 
-AWS_DEV_ENV = Environment(account=os.environ["CDK_DEFAULT_ACCOUNT"], region=os.environ["CDK_DEFAULT_REGION"])
+AWS_DEV_ENV = Environment(
+    account=os.environ["CDK_DEFAULT_ACCOUNT"], region=os.environ["CDK_DEFAULT_REGION"])
 
 AWS_PROD_ENV = Environment(account="090426658505", region="ap-southeast-2")
