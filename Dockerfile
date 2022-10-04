@@ -40,8 +40,7 @@ RUN apt-get update && apt-get install -y software-properties-common && add-apt-r
     && apt install cron \
     && apt install -y apache2 libapache2-mod-php7.4 \
     php7.4 php7.4-bcmath php7.4-mysql php7.4-intl php7.4-json php7.4-gd php7.4-soap php7.4-tidy php7.4-zip \
-    php7.4-gmp php7.4-opcache php7.4-curl php7.4-simplexml php7.4-mbstring 
-    # php7.4-redis
+    php7.4-gmp php7.4-opcache php7.4-curl php7.4-simplexml php7.4-mbstring php7.4-redis
 
 # Apache / PHP configuration
 ENV DOCUMENT_ROOT /var/www/html
@@ -67,8 +66,8 @@ RUN chmod 0755 /var/www/html/init.sh
 ENV DOCUMENT_ROOT /var/www/html/public
 # RUN REDIS_URL=$(grep 'REDIS_URL' /var/www/html/.env | cut -d'=' -f2); [ "$REDIS_URL" ] && ESCAPED_REDIS_URL=$(printf '%s\n' "$REDIS_URL" | sed -e 's/[\/&]/\\&/g') &&\
 #     sed -i "s/session\.save_handler.*/session.save_handler = redis/; s/\;session\.save_path.*/session.save_path = $ESCAPED_REDIS_URL/" /etc/php/7.4/apache2/php.ini || echo REDIS not configured
-# CMD ["bash","-c","/var/www/html/vendor/silverstripe/framework/sake dev/build && /usr/sbin/apache2ctl -D FOREGROUND"]
-ENTRYPOINT ["/var/www/html/init.sh"]
+CMD ["bash","-c","/var/www/html/vendor/silverstripe/framework/sake dev/build && /usr/sbin/apache2ctl -D FOREGROUND"]
+# ENTRYPOINT ["/var/www/html/init.sh"]
 # CMD ["clusterName.xxxxxx.cfg.usw2.cache.amazonaws.com:port", "False"]
 
 # Clean up APT when done.
