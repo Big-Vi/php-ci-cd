@@ -115,6 +115,7 @@ class EcsCluster(Construct):
             logging=ecs.LogDrivers.firelens(
                 options={
                     "Name": "firehose",
+                    "region": "ap-southeast-2",
                     "delivery_stream": "ecs"
                 },
                 secret_options={
@@ -136,6 +137,7 @@ class EcsCluster(Construct):
                 #     enable_ecs_log_metadata=True
                 # )
             ),
+            logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs"),
             memory_reservation_mib=50
         )
 
