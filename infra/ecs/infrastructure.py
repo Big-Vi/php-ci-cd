@@ -131,12 +131,12 @@ class EcsCluster(Construct):
                 type=ecs.FirelensLogRouterType.FLUENTBIT,
 
                 # the properties below are optional
-                options=ecs.FirelensOptions(
-                    config_file_value="configFileValue",
-                    enable_ecs_log_metadata=True
-                )
+                # options=ecs.FirelensOptions(
+                #     config_file_value="configFileValue",
+                #     enable_ecs_log_metadata=True
+                # )
             ),
-            memory_reservation_mib=50
+            # memory_reservation_mib=50
         )
 
 
