@@ -111,9 +111,34 @@ class EcsCluster(Construct):
             environment={
                 "REDIS_URL": elasticache_endpoint + ":6379"
             },
-            logging=ecs.LogDrivers.aws_logs(stream_prefix="ecs"),
+            # New Relic Fluentbit Output configuration
+            logging=ecs.LogDrivers.firelens(
+                options={
+                    "Name": "firehose",
+                    "delivery_stream": "ecs"
+                },
+                secret_options={
+                    "apikey": ecs.Secret.from_secrets_manager(secret, "NEW_RELIC_API_KEY")
+                }
+            ),
             command=[elasticache_endpoint, "False"]
         )
+        self.fargate_task_definition.add_firelens_log_router(
+            "firelens-log-router",
+            image=ecs.ContainerImage.from_registry(
+                "533243300146.dkr.ecr.ap-southeast-2.amazonaws.com/newrelic/logging-firelens-fluentbit"),
+            firelens_config=ecs.FirelensConfig(
+                type=ecs.FirelensLogRouterType.FLUENTBIT,
+
+                # the properties below are optional
+                options=ecs.FirelensOptions(
+                    config_file_value="configFileValue",
+                    enable_ecs_log_metadata=True
+                )
+            ),
+            memory_reservation_mib=50
+        )
+
 
         domain_zone = route53.HostedZone.from_lookup(
             self, "Zone", domain_name=constants.INFRA_PROD["DOMAIN_NAME"])
