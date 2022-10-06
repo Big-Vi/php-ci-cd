@@ -136,7 +136,7 @@ class EcsCluster(Construct):
                 #     enable_ecs_log_metadata=True
                 # )
             ),
-            # memory_reservation_mib=50
+            memory_reservation_mib=50
         )
 
 
