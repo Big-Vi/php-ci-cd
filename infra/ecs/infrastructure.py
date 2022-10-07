@@ -114,7 +114,7 @@ class EcsCluster(Construct):
             # New Relic Fluentbit Output configuration
             logging=ecs.LogDrivers.firelens(
                 options={
-                    "Name": "firehose",
+                    "Name": "newrelic",
                     "region": "ap-southeast-2",
                     "delivery_stream": "ecs"
                 },
