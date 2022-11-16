@@ -2,15 +2,17 @@ version: '3.8'
 services:
     silverstripe:
         container_name: php_ci_cd
-        image: php_ci_cd_image
+        image: php_ci_cd_image_prod
         # build:
         #     context: .
         #     target: production
         volumes:
             - .:/var/www/html
         depends_on:
-            - database
-            - redis
+           database:
+                condition: service_healthy
+           redis:
+                condition: service_healthy
         environment:
             - DOCUMENT_ROOT=/var/www/html/public
             - SS_TRUSTED_PROXY_IPS=*
@@ -32,6 +34,8 @@ services:
             - db-data:/var/lib/mysql
         ports:
             - '33060:3306'
+        healthcheck:
+            test: "exit 0"
 
     redis:
         image: "redis:alpine"
@@ -45,6 +49,8 @@ services:
             - 6379:6379
         # command: redis-server --requirepass MDNcVb924a --loglevel warning
         command: redis-server
+        healthcheck:
+            test: "exit 0"
 
 volumes:
     db-data:

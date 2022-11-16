@@ -7,7 +7,7 @@ WORKDIR /var/www/html/themes/base
 COPY /themes/base/package.json /themes/base/yarn.lock ./
 # RUN apt update && apt install -y python2
 # RUN echo "export PYTHON=/usr/bin/python2" >> ~/.bashrc && /bin/bash -c "source ~/.bashrc" 
-RUN yarn install && yarn build
+# RUN yarn install && yarn build
 RUN rm -rf node_modules/ && rm -rf /var/lib/apt/lists/*
 
 
@@ -66,8 +66,8 @@ RUN chmod 0755 /var/www/html/init.sh
 ENV DOCUMENT_ROOT /var/www/html/public
 # RUN REDIS_URL=$(grep 'REDIS_URL' /var/www/html/.env | cut -d'=' -f2); [ "$REDIS_URL" ] && ESCAPED_REDIS_URL=$(printf '%s\n' "$REDIS_URL" | sed -e 's/[\/&]/\\&/g') &&\
 #     sed -i "s/session\.save_handler.*/session.save_handler = redis/; s/\;session\.save_path.*/session.save_path = $ESCAPED_REDIS_URL/" /etc/php/7.4/apache2/php.ini || echo REDIS not configured
-# CMD ["bash","-c","/var/www/html/vendor/silverstripe/framework/sake dev/build && /usr/sbin/apache2ctl -D FOREGROUND"]
-ENTRYPOINT ["/var/www/html/init.sh"]
+CMD ["bash","-c","/usr/sbin/apache2ctl -D FOREGROUND"]
+# ENTRYPOINT ["/var/www/html/init.sh"]
 # CMD ["clusterName.xxxxxx.cfg.usw2.cache.amazonaws.com:port", "False"]
 
 # Clean up APT when done.
