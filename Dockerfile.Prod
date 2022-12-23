@@ -18,29 +18,26 @@ RUN composer install \
 
 RUN mkdir /app/public/assets && chmod 777 /app/public/assets
 
-FROM --platform=linux/amd64 ubuntu:jammy
-
-# Update
-RUN apt-get -q update && apt-get -qy upgrade && apt-get -qy autoremove && apt-get clean && rm -r /var/lib/apt/lists/*
+FROM ubuntu:jammy
 
 # Installations
 ENV TZ=Pacific/Auckland
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN DEBIAN_FRONTEND="noninteractive" \ 
-    apt-get update && apt-get install -y software-properties-common && add-apt-repository ppa:ondrej/php \
-    && apt install cron \
-    && apt install -y wget apache2 libapache2-mod-php7.4 \
-    php7.4 php7.4-bcmath php7.4-mysql php7.4-intl php7.4-json php7.4-gd php7.4-soap php7.4-tidy php7.4-zip \
-    php7.4-gmp php7.4-opcache php7.4-curl php7.4-simplexml php7.4-mbstring php7.4-redis
-
-# This command needed when creating Docker image from M1 chip computer
-RUN echo "Mutex posixsem" >> /etc/apache2/apache2.conf
 
 # Installing syslog-ng
 RUN wget -qO - https://ose-repo.syslog-ng.com/apt/syslog-ng-ose-pub.asc | apt-key add - \
     echo "deb https://ose-repo.syslog-ng.com/apt/ stable ubuntu-focal" | tee -a /etc/apt/sources.list.d/syslog-ng-ose.list
 
-RUN apt-get update -qq && apt-get install -y syslog-ng-core
+RUN DEBIAN_FRONTEND="noninteractive" \ 
+    apt-get update && apt-get install -y software-properties-common && add-apt-repository ppa:ondrej/php \
+    && apt install -y apache2 cron libapache2-mod-php7.4 \
+    php7.4 php7.4-bcmath php7.4-mysql php7.4-intl php7.4-json php7.4-gd php7.4-soap php7.4-tidy php7.4-zip \
+    php7.4-gmp php7.4-opcache php7.4-curl php7.4-simplexml php7.4-mbstring php7.4-redis \
+    syslog-ng-core \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# This command needed when creating Docker image from M1 chip computer
+RUN echo "Mutex posixsem" >> /etc/apache2/apache2.conf
 
 # Apache / PHP configuration
 ENV DOCUMENT_ROOT /var/www/html
@@ -55,14 +52,8 @@ COPY --from=frontend /var/www/html /var/www/html
 COPY --from=vendor /app/vendor/ /var/www/html/vendor/ 
 COPY --from=vendor /app/public/ /var/www/html/public/
 
-RUN chmod +x /var/www/html/init.sh && cp /var/www/html/syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
-
-# forward request and error logs to docker log collector
-RUN ln -sf /dev/stdout /var/log/apache2/access.log \
-    && ln -sf /dev/stderr /var/log/apache2/error.log
+RUN chmod +x /var/www/html/init.sh && cp /var/www/html/syslog-ng.conf /etc/syslog-ng/syslog-ng.conf \
+    && touch /var/www/html/silverstripe.log && chmod 777 /var/www/html/silverstripe.log
 
 ENV DOCUMENT_ROOT /var/www/html/public
 ENTRYPOINT ["/var/www/html/init.sh"]
-
-# Clean up APT when done.
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
