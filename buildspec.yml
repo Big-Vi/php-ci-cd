@@ -3,23 +3,30 @@ version: 0.2
 phases:
     install:
         commands:
-            - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
-            - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
+            - docker version
+            - curl -JLO https://github.com/docker/buildx/releases/download/v0.9.1/buildx-v0.9.1.linux-amd64
+            - mkdir -p ~/.docker/cli-plugins
+            - mv buildx-v0.9.1.linux-amd64 ~/.docker/cli-plugins/docker-buildx
+            - chmod a+rx ~/.docker/cli-plugins/docker-buildx
+            - docker run --privileged --rm tonistiigi/binfmt --install all
     pre_build:
         commands:
-            - REPO_BASE=090426658505.dkr.ecr.ap-southeast-2.amazonaws.com
-            - REPO_NAME=php-test
+            - REPO_BASE=973098863180.dkr.ecr.ap-southeast-2.amazonaws.com
+            - REPO_NAME=core-website
             - TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)
             - aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin "$REPO_BASE"
     build:
         commands:
-            - docker build -t "$REPO_BASE/$REPO_NAME:latest" --build-arg env=test .
+            - echo Build started on `date`
+            - echo Building the Docker image...
+            - docker buildx create --use --name customDriver
+            - docker buildx build --push --platform linux/arm64/v8 -t "$REPO_BASE/$REPO_NAME:latest" . -f Dockerfile.Prod
+            - docker buildx build --load --platform linux/arm64/v8 -t "$REPO_BASE/$REPO_NAME:latest" . -f Dockerfile.Prod
             - docker tag "$REPO_BASE/$REPO_NAME:latest" "$REPO_BASE/$REPO_NAME:$TAG"
     post_build:
         commands:
-            - docker push $REPO_BASE/$REPO_NAME:$TAG
-            - docker push $REPO_BASE/$REPO_NAME:latest
-            - printf [{\"name\":\"$REPO_NAME\"\,\"imageUri\":\"090426658505.dkr.ecr.ap-southeast-2.amazonaws.com/$REPO_NAME:$TAG\"}] > imagedefinitions.json
+            - docker push --all-tags "$REPO_BASE/$REPO_NAME"
+            - printf [{\"name\":\"$REPO_NAME\"\,\"imageUri\":\"973098863180.dkr.ecr.ap-southeast-2.amazonaws.com/$REPO_NAME:$TAG\"}] > imagedefinitions.json
 artifacts:
     files:
         - imagedefinitions.json
