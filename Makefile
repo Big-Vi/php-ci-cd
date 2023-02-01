@@ -18,3 +18,11 @@ sshcluster:
     --container $(CONTAINER_NAME) \
     --interactive \
     --command "bash"
+
+exec:
+	aws ecs update-service --cluster $(CLUSTER_NAME) \
+    --service $(SERVICE_NAME) \
+    --enable-execute-command \
+    --force-new-deployment \
+    --region ap-southeast-2 \
+    --profile work
